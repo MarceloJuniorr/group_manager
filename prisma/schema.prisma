@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Group {
+  id     String  @id @default(cuid())
+  seqno  Int
+  edicao String
+  pdf    String  @default("")
+  active Boolean
+
+  @@map("groups")
+}
+
+model Cardboard {
+  id      String @id @default(cuid())
+  groupId String
+  cardno  String
+  picture String @default("")
+
+  @@map("cardboards")
+}
+
+model Promoter {
+  id    String @id @default(cuid())
+  name  String
+  phone String
+
+  @@map("promoters")
+}
+
+model Customer {
+  id    String @id @default(cuid())
+  name  String
+  phone String
+
+  @@map("customers")
+}
+
+model Order {
+  id          String @id @default(cuid())
+  promoter_id String
+  customer_id String
+  group_qtty  Int
+
+  @@map("orders")
+}
+
+model OrderGroups {
+  id       String @id @default(cuid())
+  order_id String
+  group_id String
+
+  @@map("ordergroups")
+}
+
+model User {
+  id    String @id @default(cuid())
+  rules String @default("")
+  name  String
+  pass  String
+  phone String @default("")
+  email String
+
+  @@map("users")
+}
