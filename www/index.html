@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestão MinasCap</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="center-align">Gestão MinasCap</h1>
+    <div class="row center-align">
+      <a href="editions" class="btn waves-effect waves-light">Edição</a>
+      <a href="groups" class="btn waves-effect waves-light">Grupos</a>
+      <a href="customers" class="btn waves-effect waves-light">Clientes</a>
+      <a href="orders" class="btn waves-effect waves-light">Histórico de Vendas</a>
+      <a class="btn waves-effect waves-light modal-trigger" href="#modal-form">Nova Venda</a>
+    </div>
+  </div>
+
+  <!-- Modal para o formulário de Nova Venda -->
+  <div id="modal-form" class="modal">
+    <div class="modal-content">
+      <h4>Nova Venda</h4>
+      <form id="orderForm">
+        <div class="input-field">
+          <select id="promotora" name="promotora">
+            <!-- Opções serão preenchidas dinamicamente com JavaScript -->
+          </select>
+          <label for="promotora">Promotora</label>
+        </div>
+        <div class="input-field">
+          <input type="text" id="cliente" name="cliente">
+          <label for="cliente">Cliente</label>
+        </div>
+        <div class="input-field">
+          <input type="text" id="whatsapp" name="whatsapp">
+          <label for="whatsapp">WhatsApp</label>
+        </div>
+        <div class="input-field">
+          <input type="number" id="quantidade" name="quantidade" min="1" max="10">
+          <label for="quantidade">Quantidade</label>
+        </div>
+        <button type="submit" class="btn waves-effect waves-light">Enviar</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal para exibir os links dos grupos -->
+  <div id="responseModal" class="modal">
+    <div class="modal-content">
+      <h4>Links dos Grupos</h4>
+      <div id="modal-content">
+        <!-- Os links serão adicionados aqui dinamicamente -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="scripts.js"></script>
+</body>
+</html>

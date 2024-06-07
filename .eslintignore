@@ -1,0 +1,14 @@
+# Ignorar a pasta node_modules
+node_modules/
+
+# Ignorar a pasta dist, que geralmente contém o código compilado
+dist/
+
+# Ignorar qualquer pasta que comece com "temp" ou "logs"
+temp*/
+logs*/
+
+# Ignorar qualquer arquivo .js dentro da pasta tests
+tests/**/*.js
+
+www/

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edições - Gestão MinasCap</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1 id="edition-title" class="center-align">Edições</h1>
+    <div class="right-align">
+      <a class="btn waves-effect waves-light modal-trigger" href="#modal-new-edition">NOVA EDIÇÃO</a>
+    </div>
+    <table class="highlight">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>GRUPO</th>
+          <th>PDF</th>
+          <th>EDITAR</th>
+        </tr>
+      </thead>
+      <tbody id="editions-table-body">
+        <!-- As linhas da tabela serão inseridas dinamicamente aqui -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para criar nova edição -->
+  <div id="modal-new-edition" class="modal">
+    <div class="modal-content">
+      <h4>Nova Edição</h4>
+      <form id="newEditionForm">
+        <div class="input-field">
+          <input type="text" id="newEdition" name="edition">
+          <label for="newEdition">Edição</label>
+        </div>
+        <div class="input-field">
+          <input type="number" id="newValue" name="value">
+          <label for="newValue">Valor</label>
+        </div>
+        <div class="input-field">
+          <input type="number" id="newGroups" name="groups" min="1">
+          <label for="newGroups">Quantidade de Grupos</label>
+        </div>
+        <button type="submit" class="btn waves-effect waves-light">Criar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="editions/scripts.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grupo - Gestão MinasCap</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1 id="group-title" class="center-align">Grupo</h1>
+    <div class="row right-align">
+      <a class="btn waves-effect waves-light modal-trigger" href="#modal-add-card"><i class="material-icons">add</i> Cartela</a>
+      <a id="pdf-button" class="btn waves-effect waves-light"><i class="material-icons">cloud_download</i>PDF</a>
+    </div>
+    <table class="highlight">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cartela</th>
+          <th>Imagem</th>
+        </tr>
+      </thead>
+      <tbody id="cards-table-body">
+        <!-- As linhas da tabela serão preenchidas dinamicamente com JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para adicionar nova cartela -->
+  <div id="modal-add-card" class="modal">
+    <div class="modal-content">
+      <h4>Adicionar Cartela</h4>
+      <form id="addCardForm">
+        <div class="input-field">
+          <input type="text" id="cardNo" name="cardno">
+          <label for="cardNo">Número da Cartela</label>
+        </div>
+        <div class="file-field input-field">
+          <div class="btn">
+            <span>Imagem</span>
+            <input type="file" id="picture" name="picture" accept="image/*">
+          </div>
+          <div class="file-path-wrapper">
+            <input class="file-path validate" type="text">
+          </div>
+        </div>
+        <button type="submit" class="btn waves-effect waves-light">Enviar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="groups/scripts.js"></script>
+</body>
+</html>

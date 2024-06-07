@@ -13,27 +13,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Edition {
+  id      String  @id @default(uuid())
+  edition String
+  value   Int
+  active  Boolean @default(true)
+
+  @@map("editions")
+}
+
 model Group {
-  id     String  @id @default(cuid())
-  seqno  Int
-  edicao String
-  pdf    String  @default("")
-  active Boolean
+  id        String @id @default(uuid())
+  seqno     Int
+  editionid String
+  pdf       String @default("")
 
   @@map("groups")
 }
 
 model Cardboard {
-  id      String @id @default(cuid())
-  groupId String
-  cardno  String
+  id      String @id @default(uuid())
+  groupid String
+  cardno  String @unique
   picture String @default("")
 
   @@map("cardboards")
 }
 
 model Promoter {
-  id    String @id @default(cuid())
+  id    String @id @default(uuid())
   name  String
   phone String
 
@@ -41,32 +49,32 @@ model Promoter {
 }
 
 model Customer {
-  id    String @id @default(cuid())
+  id    String @id @default(uuid())
   name  String
-  phone String
+  phone String @unique
 
   @@map("customers")
 }
 
 model Order {
-  id          String @id @default(cuid())
-  promoter_id String
-  customer_id String
-  group_qtty  Int
+  id         String @id @default(uuid())
+  promoterid String
+  customerid String
+  amount     Int
 
   @@map("orders")
 }
 
 model OrderGroups {
-  id       String @id @default(cuid())
-  order_id String
-  group_id String
+  id      Int    @id @default(autoincrement())
+  orderid String
+  groupid String
 
   @@map("ordergroups")
 }
 
 model User {
-  id    String @id @default(cuid())
+  id    String @id @default(uuid())
   rules String @default("")
   name  String
   pass  String
