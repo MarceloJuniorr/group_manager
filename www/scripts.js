@@ -2,6 +2,15 @@ $(document).ready(function(){
   // Inicialize os modais do Materialize CSS
   $('.modal').modal();
 
+  function showRedToast(message) {
+    M.toast({html: message, classes: 'red'});
+  }
+
+  // Adicionar evento de clique aos botões Grupos, Clientes e Histórico de Vendas
+  $('#btn-grupos, #btn-clientes, #btn-vendas').click(function() {
+    showRedToast('Função não disponível! Será liberado em breve!');
+  });
+
   // Função para preencher o select de promotoras
   function fillPromotoraSelect(promotoras) {
     const selectPromotora = $('#promotora');
