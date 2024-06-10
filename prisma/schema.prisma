@@ -57,7 +57,8 @@ model Customer {
 }
 
 model Order {
-  id         String @id @default(uuid())
+  id         String   @id @default(uuid())
+  createdat  DateTime @default(now())
   promoterid String
   customerid String
   amount     Int
@@ -66,7 +67,8 @@ model Order {
 }
 
 model OrderGroups {
-  id      Int    @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
+  sended  Boolean @default(false)
   orderid String
   groupid String
 

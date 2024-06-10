@@ -1,6 +1,10 @@
 import { z } from 'zod'
 import { FastifyRequest, FastifyReply } from 'fastify'
-import { createOrderUseCase, findAllOrderUseCase } from '../use-cases/order'
+import {
+  createOrderUseCase,
+  findAllOrderUseCase,
+  findQuotasByGroupUseCase,
+} from '../use-cases/order'
 
 async function createOrder(request: FastifyRequest, reply: FastifyReply) {
   const createOrderBodySchema = z.object({
@@ -30,4 +34,18 @@ async function findAllOrder(_request: FastifyRequest, reply: FastifyReply) {
   }
 }
 
-export { createOrder, findAllOrder }
+async function findQuotasByGroup(request: FastifyRequest, reply: FastifyReply) {
+  const findQuotasByGroupSchema = z.object({
+    groupid: z.string(),
+  })
+  const { groupid } = findQuotasByGroupSchema.parse(request.query)
+
+  try {
+    const orders = await findQuotasByGroupUseCase(groupid)
+    return reply.status(201).send(orders)
+  } catch (err) {
+    return reply.status(409).send()
+  }
+}
+
+export { createOrder, findAllOrder, findQuotasByGroup }

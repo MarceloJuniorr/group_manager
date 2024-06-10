@@ -2,7 +2,11 @@ import { FastifyInstance } from 'fastify'
 import { createUser } from './controllers/user'
 import { createPromoter, findAllPromoter } from './controllers/promoter'
 import { createCustomer, findAllCustomer } from './controllers/customer'
-import { createOrder, findAllOrder } from './controllers/order'
+import {
+  createOrder,
+  findAllOrder,
+  findQuotasByGroup,
+} from './controllers/order'
 
 import {
   createEdition,
@@ -33,4 +37,5 @@ export async function appRoutes(app: FastifyInstance) {
   // Rotas de Vendas
   app.post('/api/orders', createOrder)
   app.get('/api/orders', findAllOrder)
+  app.get('/api/quotas', findQuotasByGroup)
 }

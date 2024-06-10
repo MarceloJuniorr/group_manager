@@ -6,7 +6,7 @@ $(document).ready(function(){
   function fillEditionsTable(editions) {
     const tableBody = $('#editions-table-body');
     tableBody.empty(); // Limpa a tabela atual
-    
+
     if (editions.length > 0) {
       $('#edition-title').text('Edição ' + editions[0].edition);
     }
@@ -33,6 +33,14 @@ $(document).ready(function(){
           html: '<i class="material-icons">edit</i>'
         });
         row.append($('<td>').append(editLink));
+
+        // Adiciona a coluna Cotas
+        const quotasLink = $('<a>', {
+          href: `/quotas?groupid=${group.id}`,
+          html: '<i class="material-icons">assignment_ind</i>'
+        });
+        row.append($('<td>').append(quotasLink));
+
         tableBody.append(row);
       });
     });
