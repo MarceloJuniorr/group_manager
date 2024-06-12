@@ -2,7 +2,7 @@
 node_modules/
 
 # Ignorar a pasta dist, que geralmente contém o código compilado
-dist/
+build/
 
 # Ignorar qualquer pasta que comece com "temp" ou "logs"
 temp*/
