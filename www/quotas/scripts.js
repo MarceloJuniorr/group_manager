@@ -25,6 +25,8 @@ $(document).ready(function() {
         row.append($('<td>').text(formatDate(quota.date)));
         row.append($('<td>').text(quota.promoter));
         row.append($('<td>').text(quota.customer));
+        row.append($('<td>').text(quota.phone));
+
         tableBody.append(row);
       });
     }

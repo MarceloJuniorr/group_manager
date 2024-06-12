@@ -12,6 +12,7 @@ $(document).ready(function(){
       row.append($('<td>').text(order.transacao));
       row.append($('<td>').text(order.promoter));
       row.append($('<td>').text(order.customer));
+      row.append($('<td>').text(order.phone));
       row.append($('<td>').text(order.amount));
       row.append($('<td>').text(order.edition));
       tableBody.append(row);

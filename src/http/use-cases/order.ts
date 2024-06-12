@@ -1,3 +1,4 @@
+import { env } from '@/env'
 import { prisma } from '../../lib/prisma'
 import { createCustomerUseCase, findCustomerByPhoneUseCase } from './customer'
 
@@ -48,7 +49,7 @@ export async function createOrderUseCase({
     LEFT JOIN ordergroups AS og ON g.id = og.groupid
     WHERE g.editionid = ${activeEdition.id}
     GROUP BY g.id
-    HAVING COUNT(og.id) < 10
+    HAVING COUNT(og.id) < ${env.GROUP_LIMIT}
     ORDER BY g.seqno`
 
   if (!groups) {
@@ -92,6 +93,7 @@ SELECT
   p.id AS promoterid,
   c.name AS customer,
   c.id AS customerid,
+  c.phone AS phone,
   o.amount,
   e.edition
 FROM orders o
@@ -120,6 +122,7 @@ SELECT
   p.id AS promoterid,
   c.name AS customer,
   c.id AS customerid,
+  c.phone AS phone,
   og.groupid,
   g.seqno as group
 FROM orders o

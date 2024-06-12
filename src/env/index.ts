@@ -10,6 +10,8 @@ const envSchema = z.object({
   AWS_BUCKET: z.string(),
   PDF_MESSAGE: z.string(),
   BUCKET_URL: z.string(),
+  CARDBOARD_LIMIT: z.coerce.number().default(10),
+  GROUP_LIMIT: z.coerce.number().default(10),
 })
 
 const _env = envSchema.safeParse(process.env)

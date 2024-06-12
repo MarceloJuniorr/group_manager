@@ -22,8 +22,8 @@ export async function createCardboardUseCase({
     },
   })
 
-  if (limit === 10) {
-    throw new Error('The group already has 10 tables.')
+  if (limit === env.CARDBOARD_LIMIT) {
+    throw new Error(`The group already has ${env.CARDBOARD_LIMIT} tables.`)
   }
 
   const verifyAlreadyExistsCardboard = await prisma.cardboard.findFirst({

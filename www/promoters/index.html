@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promotores - Gestão MinasCap</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="center-align">Promotores</h1>
+    <div class="right-align">
+      <a class="btn waves-effect waves-light" href="/">Voltar</a>
+      <a class="btn waves-effect waves-light modal-trigger" href="#modal-new-promoter">+ Promotor</a>
+    </div>
+    <table class="highlight">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nome</th>
+          <th>Telefone</th>
+        </tr>
+      </thead>
+      <tbody id="promoters-table-body">
+        <!-- As linhas da tabela serão inseridas dinamicamente aqui -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal para criar novo promotor -->
+  <div id="modal-new-promoter" class="modal">
+    <div class="modal-content">
+      <h4>Novo Promotor</h4>
+      <form id="newPromoterForm">
+        <div class="input-field">
+          <input type="text" id="newPromoterName" name="name" required>
+          <label for="newPromoterName">Nome</label>
+        </div>
+        <div class="input-field">
+          <input type="tel" id="newPromoterPhone" name="phone" required>
+          <label for="newPromoterPhone">Telefone</label>
+        </div>
+        <button type="submit" class="btn waves-effect waves-light">Adicionar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="promoters/scripts.js"></script>
+</body>
+</html>
