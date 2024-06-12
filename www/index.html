@@ -8,12 +8,13 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </head>
 <body>
+  <!-- Seu HTML aqui -->
   <div class="container">
     <h1 class="center-align">Gestão MinasCap</h1>
     <div class="row center-align">
       <a href="editions" class="btn waves-effect waves-light">Edição</a>
       <a href="promoters" class="btn waves-effect waves-light">Promotores</a>
-      <a id="btn-clientes" href="#" class="btn waves-effect waves-light red">Clientes</a>
+      <a href="customers" class="btn waves-effect waves-light">Clientes</a>
       <a  href="orders" class="btn waves-effect waves-light">Histórico de Vendas</a>
       <a class="btn waves-effect waves-light modal-trigger" href="#modal-form">Nova Venda</a>
     </div>
@@ -31,15 +32,15 @@
           <label for="promotora">Promotora</label>
         </div>
         <div class="input-field">
-          <input type="text" id="cliente" name="cliente">
+          <input type="text" id="cliente" name="cliente" required>
           <label for="cliente">Cliente</label>
         </div>
         <div class="input-field">
-          <input type="text" id="whatsapp" name="whatsapp">
+          <input type="text" id="whatsapp" name="whatsapp" required>
           <label for="whatsapp">WhatsApp</label>
         </div>
         <div class="input-field">
-          <input type="number" id="quantidade" name="quantidade" min="1" max="10">
+          <input type="number" id="quantidade" name="quantidade" min="1" max="10" required>
           <label for="quantidade">Quantidade</label>
         </div>
         <button type="submit" class="btn waves-effect waves-light">Enviar</button>
@@ -47,21 +48,26 @@
     </div>
   </div>
 
-  <!-- Modal para exibir os links dos grupos -->
-  <div id="responseModal" class="modal">
+  <div id="modal-venda-concluida" class="modal">
     <div class="modal-content">
-      <h4>Links dos Grupos</h4>
-      <div id="modal-content">
-        <!-- Os links serão adicionados aqui dinamicamente -->
-      </div>
+      <h4>Venda concluída</h4>
+      <p>Comprovante de venda:</p>
+      <p>Transação: <span id="transacao"></span></p>
+      <p>Edição: <span id="edicao-numero"></span></p>
+      <p>Cliente: <span id="cliente-nome"></span></p>
+      <p>WhatsApp: <span id="whatsapp-numero"></span></p>
+      <p>Grupos inseridos:</p>
+      <ul id="grupos-inseridos">
+        <!-- Os grupos serão preenchidos dinamicamente com JavaScript -->
+      </ul>
     </div>
     <div class="modal-footer">
       <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
     </div>
   </div>
-
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
   <script src="scripts.js"></script>
 </body>
 </html>

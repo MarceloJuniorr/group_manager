@@ -76,8 +76,11 @@ export async function createOrderUseCase({
     orderGroups.push(formatGroup)
   }
   const formatedReturn = {
+    transaction: order.id,
     edition: activeEdition.edition,
     value: activeEdition.value,
+    customer: customerExists.name,
+    phone: customerExists.phone,
     groups: orderGroups,
   }
   console.log(formatedReturn)

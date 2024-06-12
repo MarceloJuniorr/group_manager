@@ -26,21 +26,13 @@ export async function createCardboardUseCase({
     throw new Error(`The group already has ${env.CARDBOARD_LIMIT} tables.`)
   }
 
-  const verifyAlreadyExistsCardboard = await prisma.cardboard.findFirst({
-    where: { cardno },
-  })
-
-  if (verifyAlreadyExistsCardboard) {
-    throw new Error('Cardboard Already Exists.')
-  }
-
   //
   const base64Data = picture.replace(/^data:image\/\w+;base64,/, '')
   const buffer = Buffer.from(base64Data, 'base64')
 
   const params = {
     Bucket: env.AWS_BUCKET, // substitua pelo nome do seu bucket
-    Key: `${cardno}.JPG`, // nome do arquivo a ser salvo no S3
+    Key: `cardboard/${groupid}/${cardno}.JPG`, // nome do arquivo a ser salvo no S3
     Body: buffer,
     ContentEncoding: 'base64', // necessário para base64
     ContentType: 'image/jpeg', // ou o tipo de imagem adequado
@@ -66,7 +58,7 @@ export async function createCardboardUseCase({
   })
   console.log(`cardboard created`)
 
-  if (limit === 9) {
+  if (limit === env.CARDBOARD_LIMIT - 1) {
     const cardboards = await prisma.cardboard.findMany({
       where: { groupid },
     })
