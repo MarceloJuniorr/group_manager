@@ -1,7 +1,8 @@
-$(document).ready(function(){
+$(document).ready(function() {
   // Inicialize os modais do Materialize CSS
   $('.modal').modal();
 
+  // Função para exibir mensagens de sucesso e erro
   function showGreenToast(message) {
     M.toast({html: message, classes: 'green'});
   }
@@ -10,22 +11,41 @@ $(document).ready(function(){
   }
 
   // Função para preencher o select de promotoras
-  function fillPromotoraSelect(promotoras) {
+  function fillPromotoraSelect(promotoras, selectedPromoterId) {
+    console.log('promoter: ',selectedPromoterId, 'promotoras: ', promotoras)
     const selectPromotora = $('#promotora');
     selectPromotora.empty(); // Limpa as opções atuais
     promotoras.forEach(function(promotora) {
-      selectPromotora.append($('<option>', {
+      const option = $('<option>', {
         value: promotora.id,
         text: promotora.name
-      }));
+      });
+      if (promotora.id === selectedPromoterId) {
+        option.attr('selected', 'selected');
+      }
+      selectPromotora.append(option);
     });
     // Atualiza o select para que o Materialize CSS reconheça as mudanças
     selectPromotora.formSelect();
   }
 
+  // Obtém o promoterid dos parâmetros da URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const promoterId = urlParams.get('promoterid');
+  console.log(promoterId)
+
   // Requisição GET para /promoters e preenchimento do select de promotoras
   $.get('/api/promoters', function(promotoras) {
-    fillPromotoraSelect(promotoras);
+    fillPromotoraSelect(promotoras, promoterId);
+
+    // Se houver promoterId na URL, desabilitar o campo e mostrar o nome da promotora
+    if (promoterId) {
+      const selectedPromoter = promotoras.find(p => p.id === promoterId);
+      if (selectedPromoter) {
+        $('#promoter-name').text(`${selectedPromoter.name}`);
+        $('#promotora').prop('disabled', true); 
+        $('#promotora').formSelect();     }
+    }
   });
 
   // Aplica a máscara de telefone ao campo #whatsapp
@@ -45,13 +65,15 @@ $(document).ready(function(){
     }
 
     // Coleta dos dados do formulário
-    const promoterId = $('#promotora').val();
-    const customerName = $('#cliente').val();
+    const selectedPromoterId = $('#promotora').val() || promoterId;
+    const customerFirstName = $('#nome').val();
+    const customerLastName = $('#sobrenome').val();
+    const customerName = `${customerFirstName} ${customerLastName}`;
     const amount = parseInt($('#quantidade').val(), 10); // Converte para número
 
     // Criação do objeto de dados a ser enviado
     const orderData = {
-      promoterid: promoterId,
+      promoterid: selectedPromoterId,
       amount: amount,
       customer: {
         name: customerName,
@@ -67,7 +89,6 @@ $(document).ready(function(){
         contentType: 'application/json',
         data: JSON.stringify(orderData)
       });
-      console.log(response)
 
       // Exibir mensagem de venda concluída com sucesso
       showGreenToast('Venda concluída com sucesso!');
@@ -80,7 +101,7 @@ $(document).ready(function(){
 
       // Limpar lista de grupos inseridos
       $('#grupos-inseridos').empty();
-      
+
       // Preencher lista de grupos inseridos
       response.groups.forEach(function(group) {
         const listItem = $('<li>').text(`Grupo: ${group.group} - ID: ${group.groupid}`);

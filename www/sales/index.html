@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Venda - Gestão MinasCap</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+<body>
+  <div class="container">
+    <h1 class="center-align">Nova Venda</h1>
+    <h5 id="promoter-name" class="center-align"></h5>
+    <div class="row">
+      <a href="/" class="btn waves-effect waves-light">Voltar</a>
+    </div>
+    <div class="row">
+      <form id="orderForm" class="col s12">
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="promotora" name="promotora">
+              <!-- Opções serão preenchidas dinamicamente com JavaScript -->
+            </select>
+            <label for="promotora">Promotora</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <input type="text" id="nome" name="nome" required>
+            <label for="nome">Nome</label>
+          </div>
+          <div class="input-field col s6">
+            <input type="text" id="sobrenome" name="sobrenome" required>
+            <label for="sobrenome">Sobrenome</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input type="text" id="whatsapp" name="whatsapp" required>
+            <label for="whatsapp">WhatsApp</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input type="number" id="quantidade" name="quantidade" min="1" max="10" required>
+            <label for="quantidade">Quantidade</label>
+          </div>
+        </div>
+        <div class="row">
+          <button type="submit" class="btn waves-effect waves-light">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modal-venda-concluida" class="modal">
+    <div class="modal-content">
+      <h4>Venda concluída</h4>
+      <p>Comprovante de venda:</p>
+      <p>Transação: <span id="transacao"></span></p>
+      <p>Edição: <span id="edicao-numero"></span></p>
+      <p>Cliente: <span id="cliente-nome"></span></p>
+      <p>WhatsApp: <span id="whatsapp-numero"></span></p>
+      <p>Grupos inseridos:</p>
+      <ul id="grupos-inseridos">
+        <!-- Os grupos serão preenchidos dinamicamente com JavaScript -->
+      </ul>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
+    </div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+  <script src="sales/scripts.js"></script>
+</body>
+</html>
