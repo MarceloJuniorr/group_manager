@@ -1,51 +1,51 @@
 $(document).ready(function() {
-    // Inicialize os componentes do Materialize
-    M.AutoInit();
-  
-    // Função para formatar data no padrão brasileiro
-    function formatDate(dateString) {
-      const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-      return new Date(dateString).toLocaleString('pt-BR', options);
-    }
-  
-    // Função para preencher a tabela de cotas
-    function fillQuotasTable(quotas) {
-      const tableBody = $('#quotas-table-body');
-      tableBody.empty(); // Limpa a tabela atual
-  
-      if (quotas.length > 0) {
-        $('#quotas-title').text('Cotas do Grupo ' + quotas[0].group);
-      } else {
-        $('#error-message').text('O grupo não possui cotas vendidas.');
-        return;
-      }
-  
-      quotas.forEach(function(quota) {
-        const row = $('<tr>');
-        row.append($('<td>').text(formatDate(quota.date)));
-        row.append($('<td>').text(quota.promoter));
-        row.append($('<td>').text(quota.customer));
-        row.append($('<td>').text(quota.phone));
+  // Função para mostrar toast de sucesso ou erro
+  function showToast(message, success = true) {
+    const classes = success ? 'green' : 'red';
+    M.toast({ html: message, classes });
+  }
 
-        tableBody.append(row);
-      });
-    }
-  
-    // Obter o groupid dos parâmetros da URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const groupId = urlParams.get('groupid');
-  
-    if (groupId) {
-      // Requisição GET para /api/quotas com o groupid
-      $.get('/api/quotas', { groupid: groupId }, function(data) {
-        console.log('Dados recebidos:', data); // Log de depuração
-        fillQuotasTable(data);
-      }).fail(function(jqXHR, textStatus, errorThrown) {
-        console.error('Erro ao carregar cotas:', textStatus, errorThrown); // Log de depuração
-        $('#error-message').text('Erro ao carregar as cotas. Por favor, tente novamente.');
-      });
-    } else {
-      $('#error-message').text('Nenhum grupo selecionado.');
-    }
+  // Função para preencher a tabela de cotas
+  function fillQuotaTable(quotas) {
+    const quotaTableBody = $('#quotaTableBody');
+    quotaTableBody.empty(); // Limpa a tabela atual
+
+    quotas.forEach(function(quota) {
+      const row = $('<tr>');
+      row.append($('<td>').text(quota.group));
+      row.append($('<td>').text(new Date(quota.date).toLocaleString()));
+      row.append($('<td>').text(quota.transacao));
+      row.append($('<td>').text(quota.customer));
+      row.append($('<td>').text(quota.phone));
+
+      const messageButton = $('<button>')
+        .addClass(`btn waves-effect waves-light ${quota.sended ? 'red' : 'green'}`)
+        .append($('<i>').addClass('material-icons').text('message'))
+        .click(async function() {
+          try {
+            const response = await $.ajax({
+              url: '/api/message',
+              type: 'POST',
+              contentType: 'application/json',
+              data: JSON.stringify({ ogid: quota.transacao })
+            });
+            showToast('Mensagem enviada com sucesso!', true);
+          } catch (error) {
+            console.log(error);
+            showToast(`Erro ao enviar mensagem. : ${error.responseJSON.message}`, false);
+          }
+        //  setTimeout(() => {
+        //    location.reload();
+        //  }, 3000);
+        });
+
+      row.append($('<td>').append(messageButton));
+      quotaTableBody.append(row);
+    });
+  }
+
+  // Requisição GET para /api/quotas e preenchimento da tabela
+  $.get('/api/quotas', function(quotas) {
+    fillQuotaTable(quotas);
   });
-  
+});

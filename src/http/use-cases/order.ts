@@ -2,6 +2,8 @@ import { env } from '@/env'
 import { prisma } from '../../lib/prisma'
 import { createCustomerUseCase, findCustomerByPhoneUseCase } from './customer'
 
+import { sendMessage } from '../../lib/whatsapp'
+
 interface ICustomer {
   name: string
   phone: string
@@ -17,6 +19,20 @@ interface GroupsAvalible {
   seqno: number
   pdf: string
   ordergroupCount: number
+}
+
+interface Quota {
+  date: string
+  transacao: string
+  promoter: string
+  promoterid: string
+  customer: string
+  customerid: string
+  phone: string
+  groupid: string
+  group: number
+  edition: string
+  pdf: string
 }
 
 export async function createOrderUseCase({
@@ -133,7 +149,92 @@ FROM orders o
   INNER JOIN customers c ON (c.id = o.customerid)
   INNER JOIN ordergroups og ON (o.id = og.orderid)
   INNER JOIN groups g ON (og.groupid = g.id)
+
 WHERE og.groupid = ${groupid}
 ;`
   return quotas
+}
+
+export async function findAllQuotasUseCase() {
+  console.log('fildAllQuotas')
+
+  const quotas = await prisma.$queryRaw`
+SELECT
+  o.createdat as date,
+  og.id AS transacao,
+  p.name AS promoter,
+  p.id AS promoterid,
+  c.name AS customer,
+  c.id AS customerid,
+  c.phone AS phone,
+  og.groupid,
+  g.seqno as group,
+  og.sended 
+FROM orders o
+  INNER JOIN promoters p ON (p.id = o.promoterid)
+  INNER JOIN customers c ON (c.id = o.customerid)
+  INNER JOIN ordergroups og ON (o.id = og.orderid)
+  INNER JOIN groups g ON (og.groupid = g.id)
+  INNER JOIN editions e ON (g.editionid = e.id)
+WHERE e.active = true
+ORDER BY 9,2
+;`
+  return quotas
+}
+
+export async function sendMessageUseCase(quotasId: number) {
+  const arrayQuota: Quota[] = await prisma.$queryRaw`
+  SELECT
+  o.createdat as date,
+  og.id AS transacao,
+  p.name AS promoter,
+  p.id AS promoterid,
+  c.name AS customer,
+  c.id AS customerid,
+  c.phone AS phone,
+  og.groupid,
+  g.seqno as group,
+  e.edition,
+  g.pdf
+FROM orders o
+  INNER JOIN promoters p ON (p.id = o.promoterid)
+  INNER JOIN customers c ON (c.id = o.customerid)
+  INNER JOIN ordergroups og ON (o.id = og.orderid)
+  INNER JOIN groups g ON (og.groupid = g.id)
+  INNER JOIN editions e ON (g.editionid = e.id)
+  WHERE og.id = ${quotasId}
+  `
+  const quota = arrayQuota[0]
+  console.log(quota)
+  const message = {
+    m1: `*Olá, ${quota.customer}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${env.GROUP_LIMIT - 1} pessoas.\n\n*Aqui está a lista das ${env.CARDBOARD_LIMIT} cartelas* com as quais você estará concorrendo no sorteio deste domingo, dia 23 de junho.`,
+    m2: quota.pdf,
+    m3: `🚨 *ATENÇÃO!*\n*Para receber o resultado do sorteio, por favor, salve o meu contato!*\n_O resultado será enviado no domingo a partir das 15 horas._\n\`Em caso de premiação, entrarei em contato com você aqui pelo WhatsApp.\``,
+    m4: `Obrigado pela confiança e boa sorte pra nós domingo! 🙏 Deus abençoe.`,
+  }
+  console.log(message)
+
+  if (!quota.pdf) {
+    throw new Error('PDF not is valid')
+  }
+
+  try {
+    await sendMessage(quota.customer, quota.phone, 'text', message.m1)
+    await sendMessage(quota.customer, quota.phone, 'file', message.m2)
+    await sendMessage(quota.customer, quota.phone, 'text', message.m3)
+    await sendMessage(quota.customer, quota.phone, 'text', message.m4)
+
+    await prisma.orderGroups.updateMany({
+      data: {
+        sended: true,
+      },
+      where: {
+        id: quotasId,
+      },
+    })
+  } catch (error) {
+    return { status: 'failed', message: 'Erro ao enviar menssagens!' }
+  }
+
+  return { status: 'sucess', message: 'menssagens enviadas com sucesso!' }
 }

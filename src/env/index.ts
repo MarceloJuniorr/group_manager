@@ -12,6 +12,7 @@ const envSchema = z.object({
   BUCKET_URL: z.string(),
   CARDBOARD_LIMIT: z.coerce.number().default(10),
   GROUP_LIMIT: z.coerce.number().default(10),
+  BOTCONVERSA_APIKEY: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)
