@@ -135,20 +135,22 @@ GROUP BY
 export async function findQuotasByGroupUseCase(groupid: string) {
   const quotas = await prisma.$queryRaw`
 SELECT
-  o.createdat as date,
-  o.id AS transacao,
+o.createdat as date,
+  og.id AS transacao,
   p.name AS promoter,
   p.id AS promoterid,
   c.name AS customer,
   c.id AS customerid,
   c.phone AS phone,
   og.groupid,
-  g.seqno as group
+  g.seqno as group,
+  og.sended 
 FROM orders o
   INNER JOIN promoters p ON (p.id = o.promoterid)
   INNER JOIN customers c ON (c.id = o.customerid)
   INNER JOIN ordergroups og ON (o.id = og.orderid)
   INNER JOIN groups g ON (og.groupid = g.id)
+  INNER JOIN editions e ON (g.editionid = e.id)
 
 WHERE og.groupid = ${groupid}
 ;`
