@@ -44,8 +44,22 @@ $(document).ready(function() {
     });
   }
 
-  // Requisição GET para /api/quotas e preenchimento da tabela
-  $.get('/api/quotas', function(quotas) {
+  // Função para obter o groupid da URL
+  function getGroupIdFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('groupid');
+  }
+
+  // Obter o groupid da URL, se existir
+  const groupId = getGroupIdFromUrl();
+
+  // Requisição GET para /api/quotas com ou sem groupid
+  let apiUrl = '/api/quotas';
+  if (groupId) {
+    apiUrl += `?groupid=${groupId}`;
+  }
+
+  $.get(apiUrl, function(quotas) {
     fillQuotaTable(quotas);
   });
 });

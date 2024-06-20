@@ -63,6 +63,7 @@ async function sendMessage(request: FastifyRequest, reply: FastifyReply) {
   const findQuotasByGroupSchema = z.object({
     ogid: z.coerce.number(),
   })
+  console.log(request.originalUrl, ` | `, request.body)
   const { ogid } = findQuotasByGroupSchema.parse(request.body)
   try {
     const message = await sendMessageUseCase(ogid)
