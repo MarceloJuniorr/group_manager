@@ -7,6 +7,7 @@ import {
   findAllOrder,
   findQuotas,
   sendMessage,
+  deleteOrder,
 } from './controllers/order'
 
 import {
@@ -40,4 +41,5 @@ export async function appRoutes(app: FastifyInstance) {
   app.get('/api/orders', findAllOrder)
   app.get('/api/quotas', findQuotas)
   app.post('/api/message', sendMessage)
+  app.delete('/api/orders', deleteOrder)
 }

@@ -15,6 +15,18 @@ $(document).ready(function(){
       row.append($('<td>').text(order.phone));
       row.append($('<td>').text(order.amount));
       row.append($('<td>').text(order.edition));
+      
+      // Adiciona a coluna "Apagar"
+      const deleteCell = $('<td>');
+      const deleteIcon = $('<i class="material-icons red-text text-darken-4">close</i>');
+      deleteIcon.css('cursor', 'pointer');
+      deleteIcon.on('click', function() {
+        currentOrderId = order.transacao;
+        $('#delete-modal').modal('open');
+      });
+      deleteCell.append(deleteIcon);
+      row.append(deleteCell);
+
       tableBody.append(row);
     });
   }
@@ -28,3 +40,4 @@ $(document).ready(function(){
     M.toast({html: 'Erro ao carregar as vendas. Por favor, tente novamente.', classes: 'red'});
   });
 });
+  

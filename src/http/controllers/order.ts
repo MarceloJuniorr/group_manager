@@ -6,6 +6,7 @@ import {
   findAllQuotasUseCase,
   findQuotasByGroupUseCase,
   sendMessageUseCase,
+  deleteOrderUseCase,
 } from '../use-cases/order'
 
 async function createOrder(request: FastifyRequest, reply: FastifyReply) {
@@ -73,4 +74,15 @@ async function sendMessage(request: FastifyRequest, reply: FastifyReply) {
   }
 }
 
-export { createOrder, findAllOrder, findQuotas, sendMessage }
+async function deleteOrder(request: FastifyRequest, reply: FastifyReply) {
+  const deleteOrderSchema = z.object({ orderid: z.string() })
+  const { orderid } = deleteOrderSchema.parse(request.query)
+  try {
+    const message = await deleteOrderUseCase(orderid)
+    return reply.status(200).send(message)
+  } catch (error) {
+    return reply.status(200).send(error)
+  }
+}
+
+export { createOrder, findAllOrder, findQuotas, sendMessage, deleteOrder }
