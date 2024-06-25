@@ -116,6 +116,12 @@ $(document).ready(function() {
 
       // Abrir modal de venda concluída
       $('#modal-venda-concluida').modal('open');
+      $('#orderForm')[0].reset();
+      if (promoterId) {
+        $('#promotora').val(promoterId).prop('disabled', true).formSelect();
+      } else {
+        $('#promotora').val('').prop('disabled', false).formSelect();
+      }
 
     } catch (error) {
       // Exibir a mensagem de erro retornada pelo servidor
