@@ -59,3 +59,26 @@ export async function createPdfWithImages(
     }
   })
 }
+
+export function getNumberByIndex(index: number): number {
+  if (index < 1) {
+    throw new Error('Index must be a positive integer')
+  }
+  const typeGroup = env.TYPE_GROUP
+  const minGroup = env.MIN_GROUP
+
+  switch (typeGroup) {
+    case 0:
+      return minGroup + index
+    case 1: {
+      const start = minGroup % 2 === 0 ? minGroup + 1 : minGroup
+      return start + 2 * (index - 1)
+    }
+    case 2: {
+      const start = minGroup % 2 === 0 ? minGroup : minGroup + 1
+      return start + 2 * (index - 1)
+    }
+    default:
+      throw new Error('Invalid type group')
+  }
+}

@@ -13,6 +13,8 @@ const envSchema = z.object({
   CARDBOARD_LIMIT: z.coerce.number().default(10),
   GROUP_LIMIT: z.coerce.number().default(10),
   BOTCONVERSA_APIKEY: z.string(),
+  TYPE_GROUP: z.coerce.number().default(0),
+  MIN_GROUP: z.coerce.number().default(0),
 })
 
 const _env = envSchema.safeParse(process.env)

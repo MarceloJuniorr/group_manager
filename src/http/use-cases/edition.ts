@@ -1,3 +1,4 @@
+import { getNumberByIndex } from '@/lib/utils'
 import { prisma } from '../../lib/prisma'
 import { Group } from '@prisma/client'
 
@@ -26,9 +27,10 @@ export async function createEditionUseCase({
     })
     if (id) {
       for (let index = 1; index <= groupQtty; index++) {
+        const seqno = getNumberByIndex(index)
         await prisma.group.create({
           data: {
-            seqno: index,
+            seqno,
             editionid: id,
           },
         })
