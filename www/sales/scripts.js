@@ -44,7 +44,8 @@ $(document).ready(function() {
       if (selectedPromoter) {
         $('#promoter-name').text(`${selectedPromoter.name}`);
         $('#promotora').prop('disabled', true); 
-        $('#promotora').formSelect();     }
+        $('#promotora').formSelect();     
+      }
     }
   });
 
@@ -81,6 +82,11 @@ $(document).ready(function() {
       }
     };
 
+    // Desativa o botão de envio e mostra a tela de loading
+    const submitButton = $(this).find('button[type="submit"]');
+    submitButton.prop('disabled', true).text('Enviando...');
+    $('#loading-screen').addClass('progress');
+
     try {
       // Fazer a requisição POST para /orders com os dados da venda
       const response = await $.ajax({
@@ -113,7 +119,11 @@ $(document).ready(function() {
 
     } catch (error) {
       // Exibir a mensagem de erro retornada pelo servidor
-      alert('Erro ao enviar a venda: ' + error.responseText);
+      showRedToast('Erro ao enviar a venda: ' + error.responseText);
+    } finally {
+      // Reativa o botão de envio e esconde a tela de loading
+      submitButton.prop('disabled', false).text('Enviar');
+      $('#loading-screen').removeClass('progress');
     }
   });
-});
+})
