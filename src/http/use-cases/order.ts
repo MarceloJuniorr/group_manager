@@ -209,7 +209,7 @@ FROM orders o
   const quota = arrayQuota[0]
   console.log(quota)
   const message = {
-    m1: `*Olá, ${quota.customer.split(' ')[0]}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${env.GROUP_LIMIT - 1} pessoas.\n\n*Aqui está a lista das ${env.CARDBOARD_LIMIT} cartelas* com as quais você estará concorrendo no sorteio deste domingo, dia 23 de junho.`,
+    m1: `*Olá, ${quota.customer.split(' ')[0]}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${env.GROUP_LIMIT - 1} pessoas.\n\n*Aqui está a lista das ${env.CARDBOARD_LIMIT} cartelas* com as quais você estará concorrendo no sorteio deste domingo, dia 30 de junho.`,
     m2: quota.pdf,
     m3: `🚨 *ATENÇÃO!*\n*Para receber o resultado do sorteio, por favor, salve o meu contato!*\n_O resultado será enviado no domingo a partir das 15 horas._\n\`Em caso de premiação, entrarei em contato com você aqui pelo WhatsApp.\`\n\nObrigado pela confiança e boa sorte pra nós domingo! 🙏 Deus abençoe.`,
   }
