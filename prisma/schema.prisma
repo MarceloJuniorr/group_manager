@@ -34,7 +34,7 @@ model Group {
 model Cardboard {
   id      String @id @default(uuid())
   groupid String
-  cardno  String @unique
+  cardno  String
   picture String @default("")
 
   @@map("cardboards")

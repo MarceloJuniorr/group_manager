@@ -17,6 +17,7 @@ $(document).ready(function() {
       row.append($('<td>').text(quota.transacao));
       row.append($('<td>').text(quota.customer));
       row.append($('<td>').text(quota.phone));
+      row.append($('<td>').text(quota.promoter));
 
       const messageButton = $('<button>')
         .addClass(`btn waves-effect waves-light ${quota.sended ? 'red' : 'green'}`)
