@@ -12,7 +12,7 @@ $(document).ready(function() {
 
   // Função para preencher o select de promotoras
   function fillPromotoraSelect(promotoras, selectedPromoterId) {
-    console.log('promoter: ',selectedPromoterId, 'promotoras: ', promotoras)
+    console.log('promoter: ', selectedPromoterId, 'promotoras: ', promotoras)
     const selectPromotora = $('#promotora');
     selectPromotora.empty(); // Limpa as opções atuais
     promotoras.forEach(function(promotora) {
@@ -122,7 +122,6 @@ $(document).ready(function() {
       } else {
         $('#promotora').val('').prop('disabled', false).formSelect();
       }
-
     } catch (error) {
       // Exibir a mensagem de erro retornada pelo servidor
       showRedToast('Erro ao enviar a venda: ' + error.responseText);
@@ -132,4 +131,36 @@ $(document).ready(function() {
       $('#loading-screen').removeClass('progress');
     }
   });
-})
+
+  // Função para exibir o ranking
+  function displayRanking(data) {
+    const ranking = {};
+
+    // Calcula o número de vendas por promotor
+    data.forEach(item => {
+      if (ranking[item.promoter]) {
+        ranking[item.promoter]++;
+      } else {
+        ranking[item.promoter] = 1;
+      }
+    });
+
+    // Converte o objeto ranking em um array de arrays e ordena pelo número de vendas
+    const rankingArray = Object.entries(ranking).sort((a, b) => b[1] - a[1]);
+
+    // Preenche o corpo da tabela de ranking
+    const rankingBody = $('#ranking-body');
+    rankingBody.empty();
+    rankingArray.forEach(([promoter, sales]) => {
+      const row = $('<tr>');
+      row.append($('<td>').text(promoter));
+      row.append($('<td>').text(sales));
+      rankingBody.append(row);
+    });
+  }
+
+  // Faz uma requisição GET para /api/quotas para obter os dados das vendas
+  $.get('/api/quotas', function(data) {
+    displayRanking(data);
+  });
+});

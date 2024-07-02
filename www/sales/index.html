@@ -6,6 +6,18 @@
   <title>Venda - Gestão MinasCap</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style>
+    .ranking-table tr:nth-child(odd) {
+      background-color: #f2f2f2;
+    }
+    .ranking-table tr:nth-child(even) {
+      background-color: #b8b4b4;
+    }
+    .ranking-table th {
+      background-color: #e47e7e;
+      color: white;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -70,7 +82,23 @@
 
   <div id="loading-screen">
     <div class="indeterminate"></div>
-</div>
+  </div>
+
+  <!-- Contêiner para o ranking -->
+  <div class="container">
+    <h3 class="center-align">Ranking de Vendas por Promotor</h3>
+    <table class="striped centered ranking-table">
+      <thead>
+        <tr>
+          <th>Promotor</th>
+          <th>Vendas</th>
+        </tr>
+      </thead>
+      <tbody id="ranking-body">
+        <!-- Dados do ranking serão preenchidos dinamicamente -->
+      </tbody>
+    </table>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
