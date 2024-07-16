@@ -15,6 +15,7 @@ const envSchema = z.object({
   BOTCONVERSA_APIKEY: z.string(),
   TYPE_GROUP: z.coerce.number().default(0),
   MIN_GROUP: z.coerce.number().default(0),
+  SORTEIO: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)
