@@ -25,7 +25,7 @@ export async function createEditionUseCase({
   groupQtty,
   sorteio,
   groupLimit,
-  cardboardLimit
+  cardboardLimit,
 }: ICreateEditionUseCaseRequest) {
   try {
     const { id } = await prisma.edition.create({
@@ -35,7 +35,6 @@ export async function createEditionUseCase({
         sorteio,
         group_limit: groupLimit,
         cardboard_limit: cardboardLimit,
-
       },
     })
     if (id) {
