@@ -6,10 +6,16 @@ interface ICreateEditionUseCaseRequest {
   edition: string
   value: number
   groupQtty: number
+  sorteio: string
+  groupLimit: number
+  cardboardLimit: number
 }
 interface IFormatEditions {
   edition: string
   value: number
+  sorteio: string
+  groupLimit: number
+  cardboardLimit: number
   groups: Group[]
 }
 
@@ -17,12 +23,19 @@ export async function createEditionUseCase({
   edition,
   value,
   groupQtty,
+  sorteio,
+  groupLimit,
+  cardboardLimit
 }: ICreateEditionUseCaseRequest) {
   try {
     const { id } = await prisma.edition.create({
       data: {
         edition,
         value,
+        sorteio,
+        group_limit: groupLimit,
+        cardboard_limit: cardboardLimit,
+
       },
     })
     if (id) {
@@ -70,6 +83,9 @@ export async function findAllEditionActiveUseCase() {
       formatEditions.push({
         edition: edition.edition,
         value: edition.value,
+        sorteio: edition.sorteio,
+        groupLimit: edition.group_limit,
+        cardboardLimit: edition.cardboard_limit,
         groups,
       })
     }
@@ -97,6 +113,9 @@ export async function findAllEditionUseCase() {
     formatEditions.push({
       edition: edition.edition,
       value: edition.value,
+      sorteio: edition.sorteio,
+      groupLimit: edition.group_limit,
+      cardboardLimit: edition.cardboard_limit,
       groups,
     })
   }

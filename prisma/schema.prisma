@@ -14,10 +14,13 @@ datasource db {
 }
 
 model Edition {
-  id      String  @id @default(uuid())
-  edition String
-  value   Int
-  active  Boolean @default(true)
+  id              String  @id @default(uuid())
+  edition         String
+  sorteio         String  @default("")
+  cardboard_limit Int     @default(0)
+  group_limit     Int     @default(0)
+  value           Int
+  active          Boolean @default(true)
 
   @@map("editions")
 }

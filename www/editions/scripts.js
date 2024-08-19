@@ -62,7 +62,10 @@ $(document).ready(function(){
     // Coleta dos dados do formulário
     const newEditionData = {
       edition: $('#newEdition').val(),
+      sorteio: $('#newSorteio').val(),
       value: parseInt($('#newValue').val(), 10),
+      groupLimit: parseInt($('#newGroupLimit').val(), 10),
+      cardboardLimit: parseInt($('#newCardboardLimit').val(), 10),
       groupQtty: parseInt($('#newGroups').val(), 10)
     };
 

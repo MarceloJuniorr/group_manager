@@ -32,6 +32,9 @@ interface Quota {
   groupid: string
   group: number
   edition: string
+  sorteio: string
+  grouplimit: number
+  cardboardlimit: number
   pdf: string
 }
 
@@ -65,7 +68,7 @@ export async function createOrderUseCase({
     LEFT JOIN ordergroups AS og ON g.id = og.groupid
     WHERE g.editionid = ${activeEdition.id}
     GROUP BY g.id
-    HAVING COUNT(og.id) < ${env.GROUP_LIMIT}
+    HAVING COUNT(og.id) < ${activeEdition.group_limit}
     ORDER BY g.seqno`
 
   if (!groups) {
@@ -107,6 +110,7 @@ export async function createOrderUseCase({
 export async function findAllOrderUseCase() {
   const order = await prisma.$queryRaw`
 SELECT
+  og.id as cota,
   o.id AS transacao,
   p.name AS promoter,
   p.id AS promoterid,
@@ -122,6 +126,16 @@ FROM orders o
   INNER JOIN groups g ON (og.groupid = g.id)
   INNER JOIN editions e ON (g.editionid = e.id)
 GROUP BY 
+  og.id,
+  o.id, 
+  p.name, 
+  p.id, 
+  c.name, 
+  c.id, 
+  o.amount, 
+  e.edition
+order BY
+  og.id,
   o.id, 
   p.name, 
   p.id, 
@@ -197,6 +211,9 @@ export async function sendMessageUseCase(quotasId: number) {
   og.groupid,
   g.seqno as group,
   e.edition,
+  e.sorteio,
+  e.group_limit as grouplimit,
+  e.cardboard_limit as cardboardlimit,
   g.pdf
 FROM orders o
   INNER JOIN promoters p ON (p.id = o.promoterid)
@@ -209,7 +226,7 @@ FROM orders o
   const quota = arrayQuota[0]
   console.log(quota)
   const message = {
-    m1: `*Olá, ${quota.customer.split(' ')[0]}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${env.GROUP_LIMIT - 1} pessoas.\n\n*Aqui está a lista das ${env.CARDBOARD_LIMIT} cartelas* com as quais você estará concorrendo no sorteio deste ${env.SORTEIO}.`,
+    m1: `*Olá, ${quota.customer.split(' ')[0]}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${quota.grouplimit - 1} pessoas.\n\n*Aqui está a lista das ${quota.cardboardlimit} cartelas* com as quais você estará concorrendo no sorteio deste ${quota.sorteio}.`,
     m2: quota.pdf,
     m3: `🚨 *ATENÇÃO!*\n*Para receber o resultado do sorteio, por favor, salve o meu contato!*\n_O resultado será enviado no domingo a partir das 15 horas._\n\`Em caso de premiação, entrarei em contato com você aqui pelo WhatsApp.\`\n\nObrigado pela confiança e boa sorte pra nós domingo! 🙏 Deus abençoe.`,
   }

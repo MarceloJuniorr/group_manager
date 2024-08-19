@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </head>
+
 <body>
   <div class="container">
     <h1 class="center-align">Vendas</h1>
@@ -17,6 +19,7 @@
       <thead>
         <tr>
           <th>ID</th>
+          <th>COTA</th>
           <th>PROMOTORA</th>
           <th>CLIENTE</th>
           <th>TELEFONE</th>
@@ -31,8 +34,21 @@
     </table>
   </div>
 
+  <!-- Modal de Confirmação -->
+  <div id="delete-modal" class="modal">
+    <div class="modal-content">
+      <h4>Confirmar Exclusão</h4>
+      <p>Tem certeza de que deseja excluir esta venda?</p>
+    </div>
+    <div class="modal-footer">
+      <a href="#!" class="modal-close waves-effect waves-green btn-flat">Cancelar</a>
+      <a href="#!" id="confirm-delete" class="modal-close waves-effect waves-red btn red">Excluir</a>
+    </div>
+  </div>
+
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="orders/scripts.js"></script>
 </body>
+
 </html>

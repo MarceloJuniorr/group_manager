@@ -11,6 +11,9 @@ async function createEdition(request: FastifyRequest, reply: FastifyReply) {
     edition: z.string(),
     value: z.number(),
     groupQtty: z.number(),
+    sorteio: z.string(),
+    groupLimit: z.number(),
+    cardboardLimit: z.number(),
   })
   const data = createEditionBodySchema.parse(request.body)
 

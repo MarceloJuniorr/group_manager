@@ -22,8 +22,18 @@ export async function createCardboardUseCase({
     },
   })
 
-  if (limit === env.CARDBOARD_LIMIT) {
-    throw new Error(`The group already has ${env.CARDBOARD_LIMIT} tables.`)
+  const editionGroup: { edition: string; seqno: number; cardboardlimit: number }[] =
+    await prisma.$queryRaw`
+      SELECT e.edition, g.seqno, e.cardboard_limit as cardboardlimit  FROM editions e inner join groups g ON (e.id = g.editionid) where g.id = ${groupid}`
+
+  console.log(editionGroup);
+
+  const { cardboardlimit, edition, seqno } = editionGroup[0]
+
+  console.log(limit, '<>', cardboardlimit)
+
+  if (limit === cardboardlimit) {
+    throw new Error(`The group already has ${cardboardlimit} tables.`)
   }
 
   //
@@ -58,21 +68,18 @@ export async function createCardboardUseCase({
   })
   console.log(`cardboard created`)
 
-  if (limit === env.CARDBOARD_LIMIT - 1) {
+  if (limit === cardboardlimit - 1) {
     const cardboards = await prisma.cardboard.findMany({
       where: { groupid },
     })
 
-    const editionGroup: { edition: string; seqno: number }[] =
-      await prisma.$queryRaw`
-    SELECT e.edition, g.seqno  FROM editions e inner join groups g ON (e.id = g.editionid) where g.id = ${groupid}`
 
     console.log(editionGroup)
 
     const pdfStream = await createPdfWithImages(
       cardboards,
-      editionGroup[0].edition,
-      editionGroup[0].seqno,
+      edition,
+      seqno,
     )
 
     const paramsPdf = {
