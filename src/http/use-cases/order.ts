@@ -1,4 +1,3 @@
-import { env } from '@/env'
 import { prisma } from '../../lib/prisma'
 import { createCustomerUseCase, findCustomerByPhoneUseCase } from './customer'
 
