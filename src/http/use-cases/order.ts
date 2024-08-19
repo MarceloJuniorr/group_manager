@@ -135,14 +135,7 @@ GROUP BY
   o.amount, 
   e.edition
 order BY
-  og.id,
-  o.id, 
-  p.name, 
-  p.id, 
-  c.name, 
-  c.id, 
-  o.amount, 
-  e.edition;`
+  og.id desc;`
   return order
 }
 
