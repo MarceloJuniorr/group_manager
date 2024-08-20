@@ -221,7 +221,7 @@ FROM orders o
   const message = {
     m1: `*Olá, ${quota.customer.split(' ')[0]}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${quota.grouplimit - 1} pessoas.\n\n*Aqui está a lista das ${quota.cardboardlimit} cartelas* com as quais você estará concorrendo no sorteio deste ${quota.sorteio}.`,
     m2: quota.pdf,
-    m3: `🚨 *ATENÇÃO!*\n*Para receber o resultado do sorteio, por favor, salve meu contato: \n${env.CONTATO}.*\n\n\`Se você for premiado, entrarei em contato aqui pelo WhatsApp.\`\n\nO resultado do sorteio será publicado no meu status do WhatsApp no domingo, a partir das 15 horas.\n\n ➡ Se preferir receber o resultado diretamente aqui pelo WhatsApp, basta enviar a palavra (RESULTADO) aqui na nossa conversa no domingo após às 17 horas.`,
+    m3: `🚨 *ATENÇÃO!*\n*Para garantir que você receba o resultado do sorteio, salve meu contato:* \n*${env.CONTATO}.*\n\n\`Se você for premiado, entrarei em contato aqui pelo WhatsApp.\`\n\n_O resultado do sorteio será publicado no meu status do WhatsApp no domingo, a partir das 15 horas._\n\n ➡ Se preferir receber o resultado diretamente aqui pelo WhatsApp, basta enviar a palavra (RESULTADO) aqui na nossa conversa no domingo após às 17 horas.`,
   }
   console.log(message)
 
