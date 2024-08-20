@@ -22,11 +22,14 @@ export async function createCardboardUseCase({
     },
   })
 
-  const editionGroup: { edition: string; seqno: number; cardboardlimit: number }[] =
-    await prisma.$queryRaw`
+  const editionGroup: {
+    edition: string
+    seqno: number
+    cardboardlimit: number
+  }[] = await prisma.$queryRaw`
       SELECT e.edition, g.seqno, e.cardboard_limit as cardboardlimit  FROM editions e inner join groups g ON (e.id = g.editionid) where g.id = ${groupid}`
 
-  console.log(editionGroup);
+  console.log(editionGroup)
 
   const { cardboardlimit, edition, seqno } = editionGroup[0]
 
@@ -73,14 +76,9 @@ export async function createCardboardUseCase({
       where: { groupid },
     })
 
-
     console.log(editionGroup)
 
-    const pdfStream = await createPdfWithImages(
-      cardboards,
-      edition,
-      seqno,
-    )
+    const pdfStream = await createPdfWithImages(cardboards, edition, seqno)
 
     const paramsPdf = {
       Bucket: env.AWS_BUCKET,

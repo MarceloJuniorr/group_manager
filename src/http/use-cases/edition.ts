@@ -32,9 +32,9 @@ export async function createEditionUseCase({
       data: {
         edition,
         value,
-        sorteio,
         group_limit: groupLimit,
         cardboard_limit: cardboardLimit,
+        sorteio,
       },
     })
     if (id) {

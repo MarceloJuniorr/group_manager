@@ -16,6 +16,7 @@ const envSchema = z.object({
   TYPE_GROUP: z.coerce.number().default(0),
   MIN_GROUP: z.coerce.number().default(0),
   SORTEIO: z.string(),
+  CONTATO: z.string(),
 })
 
 const _env = envSchema.safeParse(process.env)
