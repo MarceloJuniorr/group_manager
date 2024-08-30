@@ -40,3 +40,18 @@ Fluxo para criar venda:
 cria um array de retorno com os ordergroups inner join group.pdf
 
     
+
+
+------------------------------------------------------
+RECURSOS A ADICIONAR
+
+    -   Autenticação
+            - numero do telefone > Senha padrao
+    -   Unificação dos bolões (Como se fosse dois produtos)
+    -   Editar uma venda (Alterar promotor, Editar cliente)
+    -   Controle de Cotas (Delete da cota, ediçao de grupo)
+    -   Funçao para inativar e Editar promotores
+    -   Tela de hisotiroc de vendas (Filtro por edição e ediçao padrao será a ativa)
+    -   Pensar em forma de atualizar cliente sem ter impacto
+    -   Eliminar cadastro de cliente e deixar nome e telefone na venda
+    -   Disparo de resultado, premio e nova venda

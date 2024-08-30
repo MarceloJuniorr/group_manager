@@ -1,6 +1,6 @@
 {
   "name": "group_manager",
-  "version": "1.5.0",
+  "version": "1.6.2",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -20,6 +20,7 @@
     "@types/node": "20.13.0",
     "@types/pdfkit": "0.13.4",
     "@types/pdfmake": "0.2.9",
+    "@types/qrcode": "1.5.5",
     "@typescript-eslint/eslint-plugin": "7.11.0",
     "eslint": "8.56.0",
     "eslint-config-prettier": "9.1.0",
@@ -37,6 +38,7 @@
     "@aws-sdk/lib-storage": "3.590.0",
     "@fastify/static": "7.0.4",
     "@prisma/client": "5.14.0",
+    "@whiskeysockets/baileys": "6.7.7",
     "aws-sdk": "2.1634.0",
     "axios": "1.7.2",
     "datauri": "4.1.0",
@@ -45,6 +47,9 @@
     "pdf-lib": "1.17.1",
     "pdfkit": "0.15.0",
     "pdfmake": "0.2.10",
+    "qrcode": "1.5.4",
+    "qrcode-terminal": "0.12.0",
+    "socket.io": "4.7.5",
     "zod": "3.23.8"
   }
 }

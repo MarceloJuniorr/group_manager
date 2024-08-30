@@ -1,12 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestão MinasCap</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style>
+    .status-indicator {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 5px;
+    }
+
+    .status-waiting {
+      background-color: yellow;
+    }
+
+    .status-connected {
+      background-color: green;
+    }
+
+    .status-disconnected {
+      background-color: red;
+    }
+  </style>
 </head>
+
 <body>
   <!-- Seu HTML aqui -->
   <div class="container">
@@ -15,9 +38,11 @@
       <a href="editions" class="btn waves-effect waves-light">Edição</a>
       <a href="promoters" class="btn waves-effect waves-light">Promotores</a>
       <a href="customers" class="btn waves-effect waves-light">Clientes</a>
-      <a  href="orders" class="btn waves-effect waves-light">Histórico de Vendas</a>
+      <a href="orders" class="btn waves-effect waves-light">Histórico de Vendas</a>
       <a class="btn waves-effect waves-light" href="sales">Nova Venda</a>
       <a href="quotas" class="btn waves-effect waves-light">Cotas</a>
+      <a href="whatsapp" class="btn waves-effect waves-light">Whatsapp</a>
+
     </div>
   </div>
 
@@ -66,9 +91,50 @@
       <a href="#!" class="modal-close waves-effect waves-green btn-flat">Fechar</a>
     </div>
   </div>
+
+  <!-- Semáforo de Status -->
+  <footer class="page-footer">
+    <div class="container">
+      <div class="row center-align">
+        <span class="status-indicator status-waiting" id="status-indicator"></span>
+        <span id="status-text">Aguardando status...</span>
+      </div>
+    </div>
+  </footer>
+
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
-  <script src="scripts.js"></script>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Solicita o status inicial ao servidor quando o socket é conectado
+    socket.emit('requestStatus');
+
+    socket.on('connectionUpdate', (status) => {
+      const statusElement = document.getElementById('status-indicator');
+      const statusTextElement = document.getElementById('status-text');
+
+      if (status === 'open') {
+        statusElement.className = 'status-indicator status-connected';
+        statusTextElement.textContent = 'Conectado';
+      } else if (status === 'connecting') {
+        statusElement.className = 'status-indicator status-waiting';
+        statusTextElement.textContent = 'Conectando...';
+      } else {
+        statusElement.className = 'status-indicator status-disconnected';
+        statusTextElement.textContent = 'Desconectado';
+      }
+    });
+
+    socket.on('qrCode', (qrCode) => {
+      const qrCodeElement = document.getElementById('qrcode');
+      qrCodeElement.src = `data:image/png;base64,${qrCode}`;
+      document.getElementById('qrcode-container').style.display = 'block';
+    });
+  </script>
 </body>
+
 </html>

@@ -1,13 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Página de Cotas</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+  <style>
+    .status-indicator {
+      font-size: 48px;
+      vertical-align: middle;
+    }
+
+    .status-connected {
+      color: green;
+    }
+
+    .status-waiting {
+      color: yellow;
+    }
+
+    .status-disconnected {
+      color: red;
+    }
+  </style>
 </head>
+
 <body>
+  <header class="page-header">
+    <div class="container">
+      <div class="row center-align">
+        <i class="material-icons status-indicator status-waiting"
+          id="status-icon">signal_cellular_connected_no_internet_4_bar</i>
+        <span id="status-text">Aguardando status...</span>
+      </div>
+    </div>
+  </header>
   <div class="container">
     <h1 class="center-align">Cotas</h1>
     <div class="right-align">
@@ -33,5 +62,32 @@
   <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="quotas/scripts.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Solicita o status inicial ao servidor quando o socket é conectado
+    socket.emit('requestStatus');
+
+    socket.on('connectionUpdate', (status) => {
+      const statusIconElement = document.getElementById('status-icon');
+      const statusTextElement = document.getElementById('status-text');
+
+      if (status === 'open') {
+        statusIconElement.className = 'material-icons status-indicator status-connected';
+        statusIconElement.textContent = 'signal_cellular_4_bar';
+        statusTextElement.textContent = 'Conectado';
+      } else if (status === 'connecting') {
+        statusIconElement.className = 'material-icons status-indicator status-waiting';
+        statusIconElement.textContent = 'signal_cellular_connected_no_internet_4_bar';
+        statusTextElement.textContent = 'Conectando...';
+      } else {
+        statusIconElement.className = 'material-icons status-indicator status-disconnected';
+        statusIconElement.textContent = 'signal_cellular_off';
+        statusTextElement.textContent = 'Desconectado';
+      }
+    });
+  </script>
 </body>
+
 </html>

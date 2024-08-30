@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão MinasCap - WhatsApp</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="center-align">Conexão WhatsApp</h1>
+        <div id="status-container" class="center-align">
+            <span id="status">Aguardando Status</span>
+        </div>
+        <div id="qrcode-container" class="center-align" style="display:none;">
+            <h4>Escaneie o QR Code com seu WhatsApp</h4>
+            <img id="qrcode" alt="QR Code para WhatsApp" />
+        </div>
+        <div class="center-align">
+            <a href="/" class="btn waves-effect waves-light">Voltar</a>
+            <button id="reconnect-button" class="btn waves-effect waves-light red">Reconectar</button>
+        </div>
+    </div>
+
+    <!-- Carregar o Socket.IO do servidor -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        socket.emit('requestStatus');
+
+
+        socket.on('connected', () => {
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = 'Conectado';
+            document.getElementById('qrcode-container').style.display = 'none';
+            document.getElementById('reconnect-button').style.display = 'none';
+        });
+
+        socket.on('qr', (qrCodeBase64) => {
+            const qrCodeElement = document.getElementById('qrcode');
+            qrCodeElement.src = `${qrCodeBase64}`;
+            document.getElementById('qrcode-container').style.display = 'block';
+            const statusElement = document.getElementById('status');
+            statusElement.textContent = 'Escaneie o QR Code';
+            document.getElementById('reconnect-button').style.display = 'none';
+        });
+
+        socket.on('connectionUpdate', (status) => {
+            const statusElement = document.getElementById('status');
+            if (status === 'connecting') {
+                statusElement.textContent = 'Conectando...';
+            } else if (status === 'close' || status === 'disconnected') {
+                statusElement.textContent = 'Desconectado';
+                document.getElementById('qrcode-container').style.display = 'block';
+                document.getElementById('reconnect-button').style.display = 'block';
+            } else if (status === 'open') {
+                statusElement.textContent = 'Conectado!';
+                document.getElementById('reconnect-button').style.display = 'block';
+
+            }
+        });
+
+        // Função para reconectar manualmente
+        document.getElementById('reconnect-button').addEventListener('click', () => {
+            socket.emit('reconnectRequest');
+        });
+
+    </script>
+</body>
+
+</html>
