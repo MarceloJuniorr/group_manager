@@ -14,6 +14,7 @@ import {
   createEdition,
   findAllActiveEdition,
   findAllEdition,
+  updateSaleEdition,
 } from './controllers/edition'
 import {
   createCardboard,
@@ -33,6 +34,8 @@ export async function appRoutes(app: FastifyInstance) {
   app.post('/api/editions', createEdition)
   app.get('/api/editions/active', findAllActiveEdition)
   app.get('/api/editions', findAllEdition)
+  app.post('/api/editions/sale', updateSaleEdition)
+
   // Rotas de cartelas
   app.post('/api/cardboards', createCardboard)
   app.get('/api/cardboards', findAllCardboardByGroup)

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +7,18 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 </head>
-
 <body>
   <div class="container">
     <h1 id="edition-title" class="center-align">Edições</h1>
     <div class="right-align">
+      <!-- Switch para o status da venda -->
+      <div class="switch" style="display: inline-block; margin-right: 10px;">
+        <label>
+          Venda
+          <input type="checkbox" id="sale-switch">
+          <span class="lever"></span>
+        </label>
+      </div>
       <a class="btn waves-effect waves-light modal-trigger" href="#modal-new-edition">NOVA EDIÇÃO</a>
       <a class="btn waves-effect waves-light" href="/">Voltar</a>
     </div>
@@ -70,5 +76,4 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
   <script src="editions/scripts.js"></script>
 </body>
-
 </html>

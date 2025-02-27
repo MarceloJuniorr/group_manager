@@ -1,15 +1,25 @@
 $(document).ready(function(){
-  // Inicialize os componentes do Materialize
+  // Inicializa os componentes do Materialize
   M.AutoInit();
 
-  // Função para preencher a tabela de edições e atualizar o título
+  // Variável para armazenar a edição ativa retornada da API
+  let activeEdition = '';
+
+  // Função para preencher a tabela de edições, atualizar o título e marcar o status da venda
   function fillEditionsTable(editions) {
     const tableBody = $('#editions-table-body');
     tableBody.empty(); // Limpa a tabela atual
 
     if (editions.length > 0) {
-      $('#edition-title').text('Edição ' + editions[0].edition);
-    }
+  // Armazena a edição ativa (usando a primeira edição retornada)
+  activeEdition = editions[0].edition;
+  $('#edition-title').text('Edição ' + activeEdition);
+
+  // Atualiza o estado do switch com base na propriedade "activeSale"
+  if (typeof editions[0].activeSale !== 'undefined') {
+    $('#sale-switch').prop('checked', editions[0].activeSale);
+  }
+}
 
     editions.forEach(function(edition) {
       edition.groups.forEach(function(group) {
@@ -34,7 +44,7 @@ $(document).ready(function(){
         });
         row.append($('<td>').append(editLink));
 
-        // Adiciona a coluna Cotas
+        // Coluna Cotas
         const quotasLink = $('<a>', {
           href: `/quotas?groupid=${group.id}`,
           html: '<i class="material-icons">assignment_ind</i>'
@@ -46,13 +56,41 @@ $(document).ready(function(){
     });
   }
 
-  // Requisição GET para /api/editions/active e preenchimento da tabela de edições
+  // Requisição GET para obter a edição ativa
   $.get('/api/editions/active', function(data) {
-    console.log('Data received:', data); // Adicionando log de depuração
+    console.log('Data received:', data);
     fillEditionsTable(data);
   }).fail(function(jqXHR, textStatus, errorThrown) {
-    console.error('Error loading editions:', textStatus, errorThrown); // Adicionando log de depuração
+    console.error('Error loading editions:', textStatus, errorThrown);
     alert('Erro ao carregar as edições. Por favor, tente novamente.');
+  });
+
+  // Evento de alteração do switch de venda
+  $('#sale-switch').change(function() {
+    // Verifica se há uma edição ativa
+    if (!activeEdition) {
+      M.toast({html: 'Nenhuma edição ativa encontrada.', classes: 'red'});
+      $(this).prop('checked', false);
+      return;
+    }
+
+    // Obtém o novo valor do switch (true = ativa, false = inativa)
+    const saleStatus = $(this).is(':checked');
+
+    // Envia a alteração para o endpoint /api/editions/sale
+    $.ajax({
+      url: '/api/editions/sale',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ edition: activeEdition, sale: saleStatus }),
+      success: function(response) {
+        M.toast({html: `Venda ${saleStatus ? 'ativada' : 'desativada'} com sucesso!`, classes: 'green'});
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+        console.error('Error updating sale status:', textStatus, errorThrown);
+        M.toast({html: 'Erro ao atualizar status da venda.', classes: 'red'});
+      }
+    });
   });
 
   // Evento de envio do formulário de nova edição
@@ -69,25 +107,23 @@ $(document).ready(function(){
       groupQtty: parseInt($('#newGroups').val(), 10)
     };
 
-    // Fazer a requisição POST para /api/editions com os dados da nova edição
+    // Requisição POST para criar nova edição
     $.ajax({
       url: '/api/editions',
       type: 'POST',
       contentType: 'application/json',
       data: JSON.stringify(newEditionData),
       success: function(response) {
-        // Fechar o modal após enviar o formulário
         $('#modal-new-edition').modal('close');
-        // Mostrar mensagem de sucesso
         M.toast({html: 'Nova edição criada com sucesso!', classes: 'green'});
-        // Recarregar as edições para mostrar a nova edição
+        // Atualiza a lista de edições e o estado do switch
         $.get('/api/editions/active', function(data) {
           fillEditionsTable(data);
         });
       },
       error: function(jqXHR, textStatus, errorThrown) {
         alert('Erro ao criar a nova edição. Por favor, tente novamente.');
-        console.error('Error creating edition:', textStatus, errorThrown); // Adicionando log de depuração
+        console.error('Error creating edition:', textStatus, errorThrown);
       }
     });
   });

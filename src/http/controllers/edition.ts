@@ -4,6 +4,7 @@ import {
   createEditionUseCase,
   findAllEditionActiveUseCase,
   findAllEditionUseCase,
+  updatesaleUseCase,
 } from '../use-cases/edition'
 
 async function createEdition(request: FastifyRequest, reply: FastifyReply) {
@@ -20,6 +21,21 @@ async function createEdition(request: FastifyRequest, reply: FastifyReply) {
   try {
     await createEditionUseCase(data)
     return reply.status(201).send()
+  } catch (err) {
+    return reply.status(409).send()
+  }
+}
+
+async function updateSaleEdition(request: FastifyRequest, reply: FastifyReply) {
+  const updateSaleBodySchema = z.object({
+    edition: z.string(),
+    sale: z.boolean(),
+  })
+  const data = updateSaleBodySchema.parse(request.body)
+
+  try {
+    await updatesaleUseCase(data)
+    return reply.status(200).send()
   } catch (err) {
     return reply.status(409).send()
   }
@@ -48,4 +64,9 @@ async function findAllEdition(_request: FastifyRequest, reply: FastifyReply) {
   }
 }
 
-export { createEdition, findAllActiveEdition, findAllEdition }
+export {
+  createEdition,
+  findAllActiveEdition,
+  findAllEdition,
+  updateSaleEdition,
+}

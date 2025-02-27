@@ -1,8 +1,8 @@
 $(document).ready(function() {
-  // Inicialize os modais do Materialize CSS
+  // Inicializa os modais do Materialize CSS
   $('.modal').modal();
 
-  // Função para exibir mensagens de sucesso e erro
+  // Funções para exibir mensagens
   function showGreenToast(message) {
     M.toast({html: message, classes: 'green'});
   }
@@ -10,9 +10,19 @@ $(document).ready(function() {
     M.toast({html: message, classes: 'red'});
   }
 
+  // Verifica o status da venda ao carregar a página
+  $.get('/api/editions/active', function(data) {
+    // Se houver uma edição ativa e sale_active for false, substitui o formulário por uma mensagem
+    if (data && data.length > 0 && data[0].activeSale === false) {
+      $('#orderForm').closest('.row').html('<p class="center-align red-text">Vendas encerradas para essa edição</p>');
+    }
+  }).fail(function(jqXHR, textStatus, errorThrown) {
+    console.error('Erro ao buscar edição ativa:', textStatus, errorThrown);
+  });
+
   // Função para preencher o select de promotoras
   function fillPromotoraSelect(promotoras, selectedPromoterId) {
-    console.log('promoter: ', selectedPromoterId, 'promotoras: ', promotoras)
+    console.log('promoter: ', selectedPromoterId, 'promotoras: ', promotoras);
     const selectPromotora = $('#promotora');
     selectPromotora.empty(); // Limpa as opções atuais
     promotoras.forEach(function(promotora) {
@@ -32,9 +42,9 @@ $(document).ready(function() {
   // Obtém o promoterid dos parâmetros da URL
   const urlParams = new URLSearchParams(window.location.search);
   const promoterId = urlParams.get('promoterid');
-  console.log(promoterId)
+  console.log(promoterId);
 
-  // Requisição GET para /promoters e preenchimento do select de promotoras
+  // Requisição GET para /api/promoters e preenchimento do select de promotoras
   $.get('/api/promoters', function(promotoras) {
     fillPromotoraSelect(promotoras, promoterId);
 
@@ -52,7 +62,7 @@ $(document).ready(function() {
   // Aplica a máscara de telefone ao campo #whatsapp
   $('#whatsapp').mask('(00) 00000-0000');
 
-  // Adicione o evento de envio ao formulário de Nova Venda
+  // Evento de envio do formulário de Nova Venda
   $('#orderForm').submit(async function(event) {
     event.preventDefault(); // Evitar o comportamento padrão do formulário
 
@@ -70,7 +80,7 @@ $(document).ready(function() {
     const customerFirstName = $('#nome').val();
     const customerLastName = $('#sobrenome').val();
     const customerName = `${customerFirstName} ${customerLastName}`;
-    const amount = parseInt($('#quantidade').val(), 10); // Converte para número
+    const amount = parseInt($('#quantidade').val(), 10);
 
     // Criação do objeto de dados a ser enviado
     const orderData = {
@@ -88,7 +98,7 @@ $(document).ready(function() {
     $('#loading-screen').addClass('progress');
 
     try {
-      // Fazer a requisição POST para /orders com os dados da venda
+      // Requisição POST para /api/orders com os dados da venda
       const response = await $.ajax({
         url: '/api/orders',
         type: 'POST',
@@ -96,25 +106,23 @@ $(document).ready(function() {
         data: JSON.stringify(orderData)
       });
 
-      // Exibir mensagem de venda concluída com sucesso
+      // Exibe mensagem de venda concluída com sucesso
       showGreenToast('Venda concluída com sucesso!');
 
-      // Preencher modal com detalhes da venda
+      // Preenche o modal com detalhes da venda
       $('#transacao').text(response.transaction);
       $('#cliente-nome').text(response.customer);
       $('#edicao-numero').text(response.edition);
       $('#whatsapp-numero').text(response.phone);
 
-      // Limpar lista de grupos inseridos
+      // Limpa e preenche a lista de grupos inseridos
       $('#grupos-inseridos').empty();
-
-      // Preencher lista de grupos inseridos
       response.groups.forEach(function(group) {
         const listItem = $('<li>').text(`Grupo: ${group.group} - ID: ${group.groupid}`);
         $('#grupos-inseridos').append(listItem);
       });
 
-      // Abrir modal de venda concluída
+      // Abre o modal de venda concluída e reseta o formulário
       $('#modal-venda-concluida').modal('open');
       $('#orderForm')[0].reset();
       if (promoterId) {
@@ -123,10 +131,10 @@ $(document).ready(function() {
         $('#promotora').val('').prop('disabled', false).formSelect();
       }
     } catch (error) {
-      // Exibir a mensagem de erro retornada pelo servidor
+      // Exibe mensagem de erro
       showRedToast('Erro ao enviar a venda: ' + error.responseText);
     } finally {
-      // Reativa o botão de envio e esconde a tela de loading
+      // Reativa o botão de envio e remove a tela de loading
       submitButton.prop('disabled', false).text('Enviar');
       $('#loading-screen').removeClass('progress');
     }

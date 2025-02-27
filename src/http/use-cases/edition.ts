@@ -10,6 +10,11 @@ interface ICreateEditionUseCaseRequest {
   groupLimit: number
   cardboardLimit: number
 }
+
+interface IUpdateSaleUseCaseRequest {
+  edition: string
+  sale: boolean
+}
 interface IFormatEditions {
   edition: string
   value: number
@@ -17,6 +22,7 @@ interface IFormatEditions {
   groupLimit: number
   cardboardLimit: number
   groups: Group[]
+  activeSale?: boolean
 }
 
 export async function createEditionUseCase({
@@ -81,6 +87,7 @@ export async function findAllEditionActiveUseCase() {
 
       formatEditions.push({
         edition: edition.edition,
+        activeSale: edition.active_sale,
         value: edition.value,
         sorteio: edition.sorteio,
         groupLimit: edition.group_limit,
@@ -119,4 +126,18 @@ export async function findAllEditionUseCase() {
     })
   }
   return formatEditions
+}
+
+export async function updatesaleUseCase({
+  edition,
+  sale,
+}: IUpdateSaleUseCaseRequest) {
+  await prisma.edition.updateMany({
+    where: {
+      edition,
+    },
+    data: {
+      active_sale: sale,
+    },
+  })
 }

@@ -21,6 +21,7 @@ model Edition {
   group_limit     Int     @default(0)
   value           Int
   active          Boolean @default(true)
+  active_sale     Boolean @default(true)
 
   @@map("editions")
 }
