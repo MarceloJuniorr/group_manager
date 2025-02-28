@@ -217,11 +217,10 @@ FROM orders o
   WHERE og.id = ${quotasId}
   `
   const quota = arrayQuota[0]
-  console.log(quota)
   const message = {
     m1: `*Olá, ${quota.customer.split(' ')[0]}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${quota.grouplimit - 1} pessoas.\n\n*Aqui está a lista das ${quota.cardboardlimit} cartelas* com as quais você estará concorrendo no sorteio deste ${quota.sorteio}.`,
     m2: quota.pdf,
-    m3: `⚠ *ATENÇÃO!* ⚠ \n Para receber o resultado do sorteio, salve meu contato e entre na nossa comunidade clicando no link abaixo: 👇 \n*${env.COMUNIDADE}.*\n\n 📢 Os resultados serão divulgados exclusivamente no grupo!\n\n_🔒 *Privacidade garantida!* Seu número de telefone não será visível para outros participantes. Apenas o meu número ficará acessível no grupo.`,
+    m3: `⚠ *ATENÇÃO!* ⚠ \n Para receber o resultado do sorteio, salve meu contato e entre na nossa comunidade clicando no link abaixo: 👇 \n*${env.CONTATO}*\n\n 📢 Os resultados serão divulgados exclusivamente no grupo!\n\n_🔒 *Privacidade garantida!* Seu número de telefone não será visível para outros participantes. Apenas o meu número ficará acessível no grupo.`,
   }
   console.log(message)
 
