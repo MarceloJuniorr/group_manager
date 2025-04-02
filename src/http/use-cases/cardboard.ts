@@ -55,8 +55,13 @@ export async function createCardboardUseCase({
     client: s3Client,
     params,
   })
+  let pictureUrl: string | undefined = ''
+  try {
+    pictureUrl = (await upload.done()).Location
+  } catch (error) {
+    console.log(error)
+  }
 
-  const pictureUrl = (await upload.done()).Location
   if (pictureUrl === undefined) {
     throw new Error('Failed upload to S3')
   }

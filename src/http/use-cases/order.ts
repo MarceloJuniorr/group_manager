@@ -43,7 +43,10 @@ export async function createOrderUseCase({
   customer,
   amount,
 }: CreateOrderUseCaseRequest) {
-  let customerExists = await findCustomerByPhoneUseCase(customer.phone)
+  let customerExists = await findCustomerByPhoneUseCase(
+    customer.phone,
+    customer.name,
+  )
   if (!customerExists) {
     customerExists = await createCustomerUseCase(customer)
   }
