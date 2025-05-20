@@ -1,5 +1,5 @@
 import { prisma } from '../../lib/prisma'
-import { createCustomerUseCase, findCustomerByPhoneUseCase } from './customer'
+import { createCustomerUseCase } from './customer'
 
 import { sendMessage } from '../../lib/whatsapp'
 import { env } from '@/env'
@@ -43,13 +43,8 @@ export async function createOrderUseCase({
   customer,
   amount,
 }: CreateOrderUseCaseRequest) {
-  let customerExists = await findCustomerByPhoneUseCase(
-    customer.phone,
-    customer.name,
-  )
-  if (!customerExists) {
-    customerExists = await createCustomerUseCase(customer)
-  }
+  const customerExists = await createCustomerUseCase(customer)
+
   const order = await prisma.order.create({
     data: {
       promoterid,
