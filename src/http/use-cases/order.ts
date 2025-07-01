@@ -2,7 +2,6 @@ import { prisma } from '../../lib/prisma'
 import { createCustomerUseCase } from './customer'
 
 import { sendMessage } from '../../lib/whatsapp'
-import { env } from '@/env'
 
 interface ICustomer {
   name: string
@@ -215,10 +214,14 @@ FROM orders o
   WHERE og.id = ${quotasId}
   `
   const quota = arrayQuota[0]
+  const m1 =
+    quota.grouplimit !== 1
+      ? `*Olá, ${quota.customer.split(' ')[0]}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${quota.grouplimit - 1} pessoas.\n\n*Aqui está a lista das ${quota.cardboardlimit} cartelas* com as quais você estará concorrendo no sorteio deste ${quota.sorteio}.`
+      : `*Olá, ${quota.customer.split(' ')[0]}!*\n*Aqui está sua cartela do Minas Cap - Edição ${quota.edition}.*\n\nQue estará concorrendo no sorteio deste ${quota.sorteio}.\n\nBoa sorte 🙌🏾🍀`
   const message = {
-    m1: `*Olá, ${quota.customer.split(' ')[0]}!*\n*Você está participando do Bolão Regional Contagem - Minas Cap Edição ${quota.edition}, no Grupo ${quota.group},* juntamente com outras ${quota.grouplimit - 1} pessoas.\n\n*Aqui está a lista das ${quota.cardboardlimit} cartelas* com as quais você estará concorrendo no sorteio deste ${quota.sorteio}.`,
+    m1,
     m2: quota.pdf,
-    m3: `⚠ *ATENÇÃO!* ⚠ \n Para receber o resultado do sorteio, salve meu contato e entre na nossa comunidade clicando no link abaixo: 👇 \n*${env.CONTATO}*\n\n 📢 Os resultados serão divulgados exclusivamente no grupo!\n\n_🔒 *Privacidade garantida!* Seu número de telefone não será visível para outros participantes. Apenas o meu número ficará acessível no grupo.`,
+    m3: `⚠ *ATENÇÃO!* ⚠ \nPara receber o resultado do sorteio, salve meu contato e entre no nosso canal clicando no link abaixo: 👇\n\nhttps://whatsapp.com/channel/0029Vb6HydfKbYMQ40Xcj11U\n\n*Não esqueça de clicar em seguir!*👆\n\n📢 Os resultados serão divulgados exclusivamente no canal!\n\n🔒 *Privacidade garantida!* Seu número de telefone não será visível para outros participantes. Apenas o meu número ficará acessível no canal.`,
   }
   console.log(message)
 
@@ -227,9 +230,9 @@ FROM orders o
   }
 
   try {
-    await sendMessage(quota.customer, quota.phone, 'text', message.m1)
-    await sendMessage(quota.customer, quota.phone, 'file', message.m2)
-    await sendMessage(quota.customer, quota.phone, 'text', message.m3)
+    await sendMessage(true, quota.customer, quota.phone, 'text', message.m1)
+    await sendMessage(true, quota.customer, quota.phone, 'file', message.m2)
+    await sendMessage(true, quota.customer, quota.phone, 'text', message.m3)
 
     await prisma.orderGroups.updateMany({
       data: {

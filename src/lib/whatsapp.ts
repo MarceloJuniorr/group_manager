@@ -8,37 +8,41 @@ import makeWASocket, {
 } from '@whiskeysockets/baileys'
 import { Boom } from '@hapi/boom'
 import { Server as SocketIOServer } from 'socket.io'
-import { toDataURL } from 'qrcode' // Importa o qrcode para converter em base64
-import fs from 'fs' // Importa o módulo de sistema de arquivos
+import { toDataURL } from 'qrcode'
+import fs from 'fs'
 import path from 'path'
+import axios from 'axios'
+import { config } from 'dotenv'
+config()
+
+const EVOLUTION_API_KEY = process.env.EVOLUTION_API_KEY || ''
+const EVOLUTION_URL = process.env.EVOLUTION_URL || ''
+const EVOLUTION_INSTANCE = process.env.EVOLUTION_INSTANCE || ''
 
 let sock: ReturnType<typeof makeWASocket> | undefined
 let io: SocketIOServer | undefined
-let blockReconnect = false // Bloqueio de novas tentativas de reconexão
+let blockReconnect = false
 
-// Função para limpar credenciais
 async function clearCredentials() {
   const directoryPath = 'auth_info'
 
   if (fs.existsSync(directoryPath)) {
-    const files = fs.readdirSync(directoryPath) // Lista todos os arquivos e pastas no diretório
-
+    const files = fs.readdirSync(directoryPath)
     files.forEach((file) => {
       const filePath = path.join(directoryPath, file)
       if (fs.lstatSync(filePath).isDirectory()) {
-        fs.rmSync(filePath, { recursive: true, force: true }) // Remove diretórios recursivamente
+        fs.rmSync(filePath, { recursive: true, force: true })
       } else {
-        fs.unlinkSync(filePath) // Remove arquivos
+        fs.unlinkSync(filePath)
       }
     })
-
     console.log('Credenciais limpas. Necessário reautenticar.')
   }
 }
 
-// Função para inicializar o cliente do WhatsApp
 export async function initialize(socketIO?: SocketIOServer) {
   const { state, saveCreds } = await useMultiFileAuthState('auth_info')
+
   if (sock) {
     console.log('Cliente já inicializado.')
     return sock
@@ -52,7 +56,6 @@ export async function initialize(socketIO?: SocketIOServer) {
   }
 
   io = socketIO
-
   const { version, isLatest } = await fetchLatestBaileysVersion()
   console.log(`Usando versão ${version}, última versão: ${isLatest}`)
 
@@ -68,12 +71,9 @@ export async function initialize(socketIO?: SocketIOServer) {
     console.log('connection', connection)
 
     if (qr && io) {
-      console.log(
-        'QR Code recebido, exibindo no terminal e enviando para o frontend...',
-      )
       try {
         const qrCodeBase64 = await toDataURL(qr)
-        io.emit('qr', qrCodeBase64) // Emite o QR Code como base64 para o frontend
+        io.emit('qr', qrCodeBase64)
       } catch (error) {
         console.error('Erro ao converter QR Code para base64:', error)
       }
@@ -84,28 +84,19 @@ export async function initialize(socketIO?: SocketIOServer) {
 
       if (reason === DisconnectReason.badSession) {
         console.log(`Bad Session File, Please Delete and Scan Again`)
-      } else if (reason === DisconnectReason.connectionClosed) {
+      } else if (
+        reason === DisconnectReason.connectionClosed ||
+        reason === DisconnectReason.connectionLost ||
+        reason === DisconnectReason.restartRequired ||
+        reason === DisconnectReason.timedOut
+      ) {
         sock = undefined
-        initialize(io)
-      } else if (reason === DisconnectReason.connectionLost) {
-        sock = undefined
-
         initialize(io)
       } else if (reason === DisconnectReason.connectionReplaced) {
-        console.log(
-          'Connection Replaced, Another New Session Opened, Please Close Current Session First',
-        )
+        console.log('Connection Replaced. Please close current session first.')
       } else if (reason === DisconnectReason.loggedOut) {
         sock = undefined
-        console.log('Device Logged Out, Please Login Again')
-      } else if (reason === DisconnectReason.restartRequired) {
-        console.log('Restart Required, Restarting...')
-        sock = undefined
-        initialize(io)
-      } else if (reason === DisconnectReason.timedOut) {
-        console.log('Connection TimedOut, Reconnecting...')
-        sock = undefined
-        initialize(io)
+        console.log('Device Logged Out. Please login again.')
       } else {
         sock?.end(lastDisconnect?.error)
       }
@@ -114,19 +105,11 @@ export async function initialize(socketIO?: SocketIOServer) {
 
   sock.ev.on('creds.update', saveCreds)
 
-  // Adiciona listener para evento de reconexão do frontend
   io?.on('connection', (socket) => {
-    // Força o envio do status atual de conexão quando um novo cliente se conecta
     socket.emit('connectionUpdate', sock ? 'connected' : 'disconnected')
 
     socket.on('requestStatus', () => {
-      if (sock) {
-        // Verifique se o WebSocket está aberto
-
-        socket.emit('connectionUpdate', 'open')
-      } else {
-        socket.emit('connectionUpdate', 'disconnected')
-      }
+      socket.emit('connectionUpdate', sock ? 'open' : 'disconnected')
     })
 
     socket.on('reconnectRequest', async () => {
@@ -134,84 +117,132 @@ export async function initialize(socketIO?: SocketIOServer) {
       clearCredentials()
 
       if (sock) {
-        sock.end(undefined) // Fecha a conexão adequadamente usando end
+        sock.end(undefined)
         sock = undefined
       }
-      blockReconnect = false // Remove o bloqueio de reconexão ao solicitar reconexão manual
-      initialize(io) // Reinicializa o cliente do WhatsApp
+
+      blockReconnect = false
+      initialize(io)
     })
   })
 
   return sock
 }
 
-// Função para obter o cliente existente
 export function getClient() {
   return sock
 }
 
-// Função para enviar uma mensagem
+// 🟡 Agora com parâmetro useEvolution
 export async function sendMessage(
+  useEvolution: boolean,
+  customer: string,
+  phone: string,
+  type: 'text' | 'file',
+  content: string,
+): Promise<{ status: string; message: string }> {
+  return useEvolution
+    ? await sendViaEvolution(customer, phone, type, content)
+    : await sendViaBaileys(customer, phone, type, content)
+}
+
+async function sendViaEvolution(
+  customer: string,
+  phone: string,
+  type: 'text' | 'file',
+  content: string,
+): Promise<{ status: string; message: string }> {
+  try {
+    const fullPhone = `55${phone.replace(/\D/g, '')}`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const payload: any = {
+      number: fullPhone,
+    }
+
+    if (type === 'text') {
+      payload.text = content
+    } else if (type === 'file') {
+      payload.file = content
+      payload.filename = 'Documento.pdf'
+    } else {
+      throw new Error('Tipo de mensagem não suportado.')
+    }
+
+    const url =
+      type === 'text'
+        ? `${EVOLUTION_URL}/message/sendText/${EVOLUTION_INSTANCE}`
+        : `${EVOLUTION_URL}/message/sendFile/${EVOLUTION_INSTANCE}`
+
+    const response = await axios.post(url, payload, {
+      headers: {
+        apikey: EVOLUTION_API_KEY,
+      },
+    })
+    if (response.data.success) {
+      return {
+        status: 'success',
+        message: `Mensagem enviada via Evolution (${type}).`,
+      }
+    } else {
+      throw new Error(response.data.message || 'Erro ao enviar mensagem.')
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error('Erro Evolution:', error.message || error)
+    return { status: 'error', message: 'Erro ao enviar via Evolution.' }
+  }
+}
+
+async function sendViaBaileys(
   customer: string,
   phone: string,
   type: 'text' | 'file',
   content: string,
 ): Promise<{ status: string; message: string }> {
   if (!sock) {
-    throw new Error('Cliente não inicializado. Por favor, inicialize primeiro.')
+    throw new Error('Cliente Baileys não inicializado.')
   }
 
   try {
-    const formattedPhone = `55${phone.slice(0, 2) + phone.slice(3)}@s.whatsapp.net`
-    console.log(formattedPhone)
-
-    console.log(`Enviando mensagem para ${customer} (${formattedPhone})`)
+    const formattedPhone = `55${phone.replace(/\D/g, '')}@s.whatsapp.net`
 
     let messageContent: AnyMessageContent
 
     if (type === 'text') {
-      // Prepara o conteúdo da mensagem de texto
-      messageContent = {
-        text: content,
-      }
+      messageContent = { text: content }
     } else if (type === 'file') {
-      // Prepara o conteúdo da mensagem de arquivo (PDF)
       messageContent = {
-        document: {
-          url: content, // URL do arquivo PDF
-        },
-        mimetype: 'application/pdf', // Define o tipo MIME para PDF
-        fileName: 'Documento.pdf', // Nome do arquivo a ser exibido no WhatsApp
+        document: { url: content },
+        mimetype: 'application/pdf',
+        fileName: 'Documento.pdf',
       }
     } else {
       throw new Error('Tipo de mensagem não suportado.')
     }
 
     await sock.sendMessage(formattedPhone, messageContent as AnyMessageContent)
-    console.log(`Mensagem do tipo '${type}' enviada com sucesso.`)
 
     return {
       status: 'success',
-      message: `Mensagem do tipo '${type}' enviada com sucesso.`,
+      message: `Mensagem enviada via Baileys (${type}).`,
     }
   } catch (error) {
-    console.error('Erro ao enviar mensagem:', error)
-    return { status: 'error', message: 'Erro ao enviar mensagem.' }
+    console.error('Erro Baileys:', error)
+    return { status: 'error', message: 'Erro ao enviar via Baileys.' }
   }
 }
 
-// Função para verificar o status da conexão
 export async function isConnected(): Promise<boolean> {
   if (!sock) {
-    console.log('Cliente não inicializado.')
+    console.log('Cliente Baileys não inicializado.')
     return false
   }
 
   try {
     const state = sock.ws.readyState
-    return state === 1 // WebSocket connection is open
+    return state === 1
   } catch (error) {
-    console.error('Erro ao verificar status da conexão:', error)
+    console.error('Erro ao verificar conexão:', error)
     return false
   }
 }

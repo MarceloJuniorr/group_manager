@@ -21,10 +21,11 @@ export async function findAllCustomerUseCase() {
   return await prisma.customer.findMany()
 }
 
-export async function findCustomerByPhoneUseCase(phone: string) {
+export async function findCustomerByPhoneUseCase(phone: string, name: string) {
   return await prisma.customer.findFirst({
     where: {
       phone,
+      name,
     },
   })
 }

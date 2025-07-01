@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function () {
   M.AutoInit();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -12,16 +12,16 @@ $(document).ready(function(){
       $('#group-title').text(`Edição ${edition} Grupo ${group.seqno}`);
       if (!group.pdf) {
         $('#pdf-button').addClass('red');
-        $('#pdf-button').click(function(event) {
+        $('#pdf-button').click(function (event) {
           event.preventDefault();
-          M.toast({html: 'PDF ainda não está disponível!', classes: 'red'});
+          M.toast({ html: 'PDF ainda não está disponível!', classes: 'red' });
         });
       } else {
         $('#pdf-button').attr('href', group.pdf);
         $('#pdf-button').removeClass('red');
       }
     } else {
-      M.toast({html: 'Grupo não encontrado.', classes: 'red'});
+      M.toast({ html: 'Grupo não encontrado.', classes: 'red' });
     }
   }
 
@@ -29,7 +29,7 @@ $(document).ready(function(){
     const tableBody = $('#cards-table-body');
     tableBody.empty();
 
-    cards.forEach(function(card) {
+    cards.forEach(function (card) {
       const row = $('<tr>');
       row.append($('<td>').text(card.id));
       row.append($('<td>').text(card.cardno));
@@ -43,57 +43,91 @@ $(document).ready(function(){
     });
   }
 
-  $.get('/api/editions/active', function(data) {
+  $.get('/api/editions/active', function (data) {
     fillGroupHeader(data[0]);
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     console.error('Error loading edition data:', textStatus, errorThrown);
-    M.toast({html: `Erro ao carregar os dados da edição: ${textStatus}`, classes: 'red'});
+    M.toast({ html: `Erro ao carregar os dados da edição: ${textStatus}`, classes: 'red' });
   });
 
-  $.get(`/api/cardboards?groupid=${groupid}`, function(data) {
+  $.get(`/api/cardboards?groupid=${groupid}`, function (data) {
     fillCardsTable(data);
-  }).fail(function(jqXHR, textStatus, errorThrown) {
+  }).fail(function (jqXHR, textStatus, errorThrown) {
     console.error('Error loading cards data:', textStatus, errorThrown);
-    M.toast({html: `Erro ao carregar as cartelas: ${textStatus}`, classes: 'red'});
+    M.toast({ html: `Erro ao carregar as cartelas: ${textStatus}`, classes: 'red' });
   });
 
-  async function uploadFile(file) {
+  async function resizeImage(file, maxWidth = 1170, maxHeight = 830) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = function() {
-        const base64data = reader.result.split(',')[1];
-        const cardData = {
-          cardno: file.name.split('.')[0],
-          groupid: groupid,
-          picture: base64data
-        };
+      reader.onload = function (event) {
+        const img = new Image();
+        img.onload = function () {
+          let width = img.width;
+          let height = img.height;
 
-        $.ajax({
-          url: '/api/cardboards',
-          type: 'POST',
-          contentType: 'application/json',
-          data: JSON.stringify(cardData),
-          success: function(response) {
-            M.toast({html: `Cartela ${cardData.cardno} adicionada com sucesso!`, classes: 'green'});
-            resolve(response);
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            M.toast({html: `Erro ao adicionar a cartela ${file.name}: ${textStatus}`, classes: 'red'});
-            console.error('Error adding card:', textStatus, errorThrown);
-            reject(errorThrown);
+          // Calcula a proporção mantendo dentro de maxWidth x maxHeight
+          if (width > maxWidth || height > maxHeight) {
+            const widthRatio = maxWidth / width;
+            const heightRatio = maxHeight / height;
+            const ratio = Math.min(widthRatio, heightRatio);
+            width = width * ratio;
+            height = height * ratio;
           }
-        });
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const resizedBase64 = canvas.toDataURL('image/jpeg', 0.8); // 80% qualidade JPEG
+          resolve(resizedBase64.split(',')[1]); // só o base64 limpo
+        };
+        img.onerror = reject;
+        img.src = event.target.result;
       };
+      reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   }
 
-  $('#addCardForm').submit(async function(event) {
+  async function uploadFile(file) {
+    try {
+      const resizedBase64 = await resizeImage(file, 1170, 830);
+
+      const cardData = {
+        cardno: file.name.split('.')[0],
+        groupid: groupid,
+        picture: resizedBase64
+      };
+
+      return $.ajax({
+        url: '/api/cardboards',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(cardData),
+        success: function (response) {
+          M.toast({ html: `Cartela ${cardData.cardno} adicionada com sucesso!`, classes: 'green' });
+        },
+        error: function (jqXHR, textStatus, errorThrown) {
+          M.toast({ html: `Erro ao adicionar a cartela ${file.name}: ${textStatus}`, classes: 'red' });
+          console.error('Error adding card:', textStatus, errorThrown);
+        }
+      });
+    } catch (error) {
+      console.error('Erro ao redimensionar imagem:', error);
+      M.toast({ html: `Erro ao redimensionar ${file.name}`, classes: 'red' });
+    }
+  }
+
+  $('#addCardForm').submit(async function (event) {
     event.preventDefault();
 
     const files = $('#pictures')[0].files;
     if (files.length === 0) {
-      M.toast({html: 'Por favor, selecione uma imagem.', classes: 'red'});
+      M.toast({ html: 'Por favor, selecione uma imagem.', classes: 'red' });
       return;
     }
 
@@ -109,9 +143,9 @@ $(document).ready(function(){
     }
 
     $('#loading-overlay').hide(); // Hide loading overlay
-    
+
     // Recarregar as cartelas para mostrar todas as novas cartelas
-    $.get(`/api/cardboards?groupid=${groupid}`, function(data) {
+    $.get(`/api/cardboards?groupid=${groupid}`, function (data) {
       fillCardsTable(data);
     });
   });
