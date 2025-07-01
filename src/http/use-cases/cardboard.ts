@@ -83,7 +83,12 @@ export async function createCardboardUseCase({
 
     console.log(editionGroup)
 
-    const pdfStream = await createPdfWithImages(cardboards, edition, seqno)
+    const pdfStream = await createPdfWithImages(
+      cardboardlimit,
+      cardboards,
+      edition,
+      seqno,
+    )
 
     const paramsPdf = {
       Bucket: env.AWS_BUCKET,

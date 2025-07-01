@@ -21,6 +21,7 @@ async function downloadImage(url: string): Promise<string> {
   }
 }
 export async function createPdfWithImages(
+  cardboardlimit: number,
   imageUrls: Picture[],
   edition: string,
   group: number,
@@ -31,8 +32,12 @@ export async function createPdfWithImages(
     alignment: 'center' as 'left' | 'right' | 'center' | 'justify',
   }
   const content: Content[] = []
+  const text =
+    cardboardlimit !== 1
+      ? `Bolão Regional Contagem – Grupo ${group} – Edição ${edition} ${env.PDF_MESSAGE}`
+      : `Cartela Individual – Edição ${edition}`
   content.push({
-    text: `Bolão Regional Contagem – Grupo ${group} – Edição ${edition} ${env.PDF_MESSAGE}`,
+    text,
   })
   for (const { picture } of imageUrls) {
     const imageBase64 = await downloadImage(picture)
@@ -47,7 +52,7 @@ export async function createPdfWithImages(
   return new Promise((resolve, reject) => {
     try {
       const pdfDocGenerator = pdfMake.createPdf({ content, defaultStyle })
-      pdfDocGenerator.getBuffer((buffer: Uint8Array) => {
+      pdfDocGenerator.getBuffer((buffer: Buffer) => {
         const readableStream = new Readable()
         readableStream._read = () => {} // _read is required but you can noop it
         readableStream.push(buffer)

@@ -1,6 +1,6 @@
 {
   "name": "group_manager",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -17,7 +17,7 @@
     "@eslint/js": "8.56.0",
     "@rocketseat/eslint-config": "2.2.2",
     "@types/fastify-static": "2.2.1",
-    "@types/node": "20.13.0",
+    "@types/node": "24.0.8",
     "@types/pdfkit": "0.13.4",
     "@types/pdfmake": "0.2.9",
     "@types/qrcode": "1.5.5",
