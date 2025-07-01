@@ -189,7 +189,7 @@ async function sendViaEvolution(
     }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    console.error('Erro Evolution:', error.message || error)
+    console.error('Erro Evolution:', JSON.stringify(error))
     return { status: 'error', message: 'Erro ao enviar via Evolution.' }
   }
 }
