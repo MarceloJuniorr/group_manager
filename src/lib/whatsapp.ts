@@ -172,7 +172,7 @@ async function sendViaEvolution(
     const url =
       type === 'text'
         ? `${EVOLUTION_URL}/message/sendText/${EVOLUTION_INSTANCE}`
-        : `${EVOLUTION_URL}/message/sendFile/${EVOLUTION_INSTANCE}`
+        : `${EVOLUTION_URL}/message/sendMedia/${EVOLUTION_INSTANCE}`
 
     const response = await axios.post(url, payload, {
       headers: {
