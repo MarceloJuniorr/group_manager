@@ -162,8 +162,9 @@ async function sendViaEvolution(
     if (type === 'text') {
       payload.text = content
     } else if (type === 'file') {
-      payload.file = content
-      payload.filename = 'Documento.pdf'
+      payload.mediaMessage.mediaType = 'document'
+      payload.mediaMessage.fileName = 'Documento.pdf'
+      payload.mediaMessage.media = content
     } else {
       throw new Error('Tipo de mensagem não suportado.')
     }
